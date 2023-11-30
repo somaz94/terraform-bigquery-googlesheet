@@ -1,0 +1,6 @@
+gspread==3.7.0
+google-cloud-bigquery==2.20.0
+google-auth==1.33.0
+pytz
+pandas
+pyarrow

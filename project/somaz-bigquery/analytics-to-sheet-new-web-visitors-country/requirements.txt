@@ -1,0 +1,18 @@
+# Google API Client Library for Python
+google-api-python-client==2.40.0
+
+# Google Auth Library
+google-auth==2.6.6
+
+# Google Cloud BigQuery
+google-cloud-bigquery==2.34.2
+
+# Google Analytics Data API V1Beta Client Library
+google-analytics-data==0.10.0
+
+# GSpread for Google Sheets API
+gspread==5.3.2
+
+# Requests, if you're making HTTP requests in your code
+requests==2.27.1
+
