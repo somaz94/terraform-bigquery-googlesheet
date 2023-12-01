@@ -36,6 +36,8 @@ resource "google_storage_bucket" "cloud_function_storage" {
   force_destroy               = true
 }
 
+##########################################################################################################
+
 ## mongodb -> bigquery table workflow
 resource "null_resource" "mongodb_bigquery_zip_cloud_function" {
   depends_on = [google_bigquery_dataset.mongodb_dataset, google_storage_bucket.cloud_function_storage]
@@ -105,6 +107,8 @@ resource "google_cloud_scheduler_job" "mongodb_bigquery_job" {
   }
 }
 
+##########################################################################################################
+
 # Compress and upload source code for deduplication Cloud Function deployment
 resource "null_resource" "bigquery_deduplication_zip_cloud_function" {
   depends_on = [google_bigquery_dataset.mongodb_dataset, google_storage_bucket.cloud_function_storage]
@@ -171,6 +175,8 @@ resource "google_cloud_scheduler_job" "bigquery_remove_duplicates_job" {
     }
   }
 }
+
+##########################################################################################################
 
 ## bigquery table  -> googlesheet workflow simple data
 resource "null_resource" "bigquery_sheet_zip_simple_cloudfunction" {
@@ -242,6 +248,7 @@ resource "google_cloud_scheduler_job" "bigquery_sheet_simple_job" {
   }
 }
 
+##########################################################################################################
 
 ## bigquery table  -> googlesheet workflow multiple data
 resource "null_resource" "bigquery_sheet_zip_multiple_cloudfunction" {

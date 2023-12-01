@@ -68,6 +68,7 @@ resource "google_cloud_scheduler_job" "analytics_sheet_new_web_visitors_job" {
   }
 }
 
+##########################################################################################################
 
 ## googleanalytics  -> googlesheet workflow (New Web Visitors by Country)
 resource "null_resource" "analytics_sheet_new_web_visitors_country_zip_cloudfunction" {

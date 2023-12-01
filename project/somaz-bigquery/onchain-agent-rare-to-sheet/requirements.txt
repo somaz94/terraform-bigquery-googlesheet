@@ -1,0 +1,6 @@
+requests==2.25.1
+gspread==3.6.0
+google-auth==1.27.1
+google-api-python-client==1.12.8
+Flask<3.0,>=1.0
+

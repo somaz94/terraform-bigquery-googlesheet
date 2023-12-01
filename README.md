@@ -34,6 +34,24 @@ This project integrates various data sources with Google Sheets and BigQuery usi
     - Fetches the daily price of Matic from [CoinGecko](https://www.coingecko.com/ko/%EC%BD%94%EC%9D%B8/polygon/historical_data#panel) and inputs it into Google Sheets.
   - **🔄 mongodb-to-bigquery**
     - Transforms data from MongoDB for export to BigQuery.
+  - **🌐 onchain-agent-common-to-sheet**
+    - Imports Onchain data from Dune API to Google Sheets.
+  - **🌐 onchain-agent-epic-to-sheet**
+    - Imports Onchain data from Dune API to Google Sheets.
+  - **🌐 onchain-agent-legend-to-sheet**
+    - Imports Onchain data from Dune API to Google Sheets.
+  - **🌐 onchain-agent-rare-to-sheet**
+    - Imports Onchain data from Dune API to Google Sheets.
+  - **🌐 onchain-agent-uncommon-to-sheet**
+    - Imports Onchain data from Dune API to Google Sheets.
+  - **🌐 onchain-materials-dp-chip-to-sheet**
+    - Imports Onchain data from Dune API to Google Sheets.
+  - **🌐 onchain-materials-skill-exchange-ticket-to-sheet**
+    - Imports Onchain data from Dune API to Google Sheets.
+  - **🌐 onchain-pack-basic-epic1-to-sheet**
+    - Imports Onchain data from Dune API to Google Sheets.
+  - **🌐 onchain-quest2-daily-global-to-sheet**
+    - Imports Onchain data from Dune API to Google Sheets.
 
 <br/>
 
@@ -43,6 +61,7 @@ This project integrates various data sources with Google Sheets and BigQuery usi
 - **🔗 API Usage**: 
   - For GA4, the [Analytics Reporting API](https://console.cloud.google.com/apis/api/analyticsreporting.googleapis.com/overview?hl=ko&project=mgmt-2023&supportedpurview=project) is not available.
   - However, the [Google Analytics Data API](https://console.cloud.google.com/apis/api/analyticsdata.googleapis.com/overview?hl=ko&project=mgmt-2023&supportedpurview=project) can be used.
+  - To use the [Dune API](https://dune.com/docs/api/) for Onchain data, you will need to create an API Key and choose an appropriate billing plan.
 
 <br/>
 

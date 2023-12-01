@@ -67,6 +67,7 @@ resource "google_cloud_scheduler_job" "bigquery_sheet_retention_job" {
   }
 }
 
+##########################################################################################################
 
 ## bigquery  -> googlesheet workflow wallet data
 resource "null_resource" "bigquery_sheet_zip_wallet_cloudfunction" {
