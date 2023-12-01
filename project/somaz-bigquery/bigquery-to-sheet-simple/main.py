@@ -21,7 +21,7 @@ def update_data_in_sheets(request):
 
         # Open Google Sheets document
         sh = gc.open_by_key(os.getenv('SHEET_ID'))
-        worksheet = sh.worksheet('Somaz_Table') # Replace 'KPI_Table' with your actual sheet name
+        worksheet = sh.worksheet('Somaz_Table') # Replace 'Somaz_Table' with your actual sheet name
 
         # Determine yesterday's date
         yesterday = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
@@ -29,10 +29,10 @@ def update_data_in_sheets(request):
         # Execute queries and update sheet
         update_sheet_with_query(client, worksheet, nru_query, yesterday, 'B', 'date') # NRU data in column B
         update_sheet_with_query(client, worksheet, dau_query, yesterday, 'D', 'dt')  # DAU data in column D
-        update_sheet_with_query(client, worksheet, arena_finish_query, yesterday, 'G', 'date')  
-        update_sheet_with_query(client, worksheet, arena_finish_rewards_query, yesterday, 'I', 'date')  #
-        update_sheet_with_query(client, worksheet, arena_ticket_consumption_query, yesterday, 'L', 'date') 
-        update_sheet_with_query(client, worksheet, character_gradeup_query, yesterday, 'M', 'date')  
+        update_sheet_with_query(client, worksheet, arena_finish_query, yesterday, 'G', 'date')  # 전투횟수 data in column G
+        update_sheet_with_query(client, worksheet, arena_finish_rewards_query, yesterday, 'I', 'date')  # DP 칩 획득(아레나)(비귀속) data in column I
+        update_sheet_with_query(client, worksheet, arena_ticket_consumption_query, yesterday, 'L', 'date') # DP칩 사용(비귀속) data in column L
+        update_sheet_with_query(client, worksheet, character_gradeup_query, yesterday, 'M', 'date')  # 승급횟수 data in column M
 
         logging.info("Daily data updated in Google Sheets for yesterday!")
         return "Daily data updated in Google Sheets for yesterday!", 200
@@ -76,63 +76,89 @@ def update_sheet_with_query(client, worksheet, query, date, column, date_column_
                 break
 
 # Define queries here
+
+# NRU data
 nru_query = """
 SELECT
-  FORMAT_DATE("%Y-%m-%d", PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time)) AS date,
+  FORMAT_DATE("%Y-%m-%d", CAST(PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time) AS DATE)) AS date,
   COUNT(*) as count
 FROM
-  `somaz-biguqery.mongodb_dataset.production-mongodb-internal-table`
+  `somaz-bigquery.mongodb_dataset.production-mongodb-internal-table`
 WHERE
   reason = '/user/create'
   AND collectionName IN UNNEST(["create_user_detail"])
-  AND PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time) >= TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), MONTH)
+  AND (
+    CAST(PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time) AS DATE) BETWEEN DATE_TRUNC(CURRENT_DATE(), MONTH) AND CURRENT_DATE()
+    OR
+    CAST(PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time) AS DATE) = LAST_DAY(DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH), MONTH)
+  )
 GROUP BY
   date
 ORDER BY
   date;
 """
 
+# DAU data
 dau_query = """
-WITH Step1 AS (
+WITH
+  Step1 AS (
     SELECT
-        PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time) AS parsed_time,
-        nid
-    FROM `somaz-biguqery.mongodb_dataset.production-mongodb-internal-table`
+      PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time) AS parsed_time,
+      nid
+    FROM
+      `somaz-bigquery.mongodb_dataset.production-mongodb-internal-table`
     WHERE
-        reason = '/login'
-        AND collectionName IN UNNEST(["login"])
-        AND PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time) >= TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), MONTH)
-),
-Step2 AS (
+      reason = '/login'
+      AND collectionName IN UNNEST(["login"])
+      AND (
+        CAST(PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time) AS DATE) BETWEEN DATE_TRUNC(CURRENT_DATE(), MONTH) AND CURRENT_DATE()
+        OR
+        CAST(PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time) AS DATE) = LAST_DAY(DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH), MONTH)
+      )
+  ),
+  Step2 AS (
     SELECT
-        FORMAT_DATE('%Y-%m-%d', parsed_time) AS dt,
-        nid,
-        COUNT(*) as count
-    FROM Step1
-    GROUP BY dt, nid
-)
-SELECT dt, COUNT(nid) as count
-FROM Step2
-GROUP BY dt
-ORDER BY dt;
+      FORMAT_DATE('%Y-%m-%d', parsed_time) AS dt,
+      nid,
+      COUNT(*) as count
+    FROM
+      Step1
+    GROUP BY
+      dt, nid
+  )
+SELECT
+  dt,
+  COUNT(nid) as count
+FROM
+  Step2
+GROUP BY
+  dt
+ORDER BY
+  dt;
 """
 
+# 전투횟수 data
 arena_finish_query = """
 SELECT
   FORMAT_DATE("%Y-%m-%d", PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time)) AS date,
   COUNT(*) as count
 FROM
-  `somaz-biguqery.mongodb_dataset.production-mongodb-internal-table`
+  `somaz-bigquery.mongodb_dataset.production-mongodb-internal-table`
 WHERE
   reason = '/arena/finish'
   AND collectionName IN UNNEST(["finish_arena"])
-  AND PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time) >= TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), MONTH)
+  AND (
+    CAST(PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time) AS DATE) BETWEEN DATE_TRUNC(CURRENT_DATE(), MONTH) AND CURRENT_DATE()
+    OR
+    CAST(PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time) AS DATE) = LAST_DAY(DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH), MONTH)
+  )
 GROUP BY
   date
 ORDER BY
   date;
 """
 
+# DP 칩 획득(아레나)(비귀속) data
 arena_finish_rewards_query = """
 WITH
   ParsedData AS (
@@ -141,11 +167,15 @@ WITH
       JSON_EXTRACT_SCALAR(contents, '$.reward.dataId') AS dataId,
       CAST(JSON_EXTRACT_SCALAR(contents, '$.reward.quantity') AS INT64) AS quantity
     FROM
-      `somaz-biguqery.mongodb_dataset.production-mongodb-internal-table`
+      `somaz-bigquery.mongodb_dataset.production-mongodb-internal-table`
     WHERE
       reason = '/arena/finish'
       AND collectionName IN UNNEST(["payment_material"])
-      AND PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time) >= TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), MONTH)
+      AND (
+        CAST(PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time) AS DATE) BETWEEN DATE_TRUNC(CURRENT_DATE(), MONTH) AND CURRENT_DATE()
+        OR
+        CAST(PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time) AS DATE) = LAST_DAY(DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH), MONTH)
+      )
   )
 SELECT
   date,
@@ -158,6 +188,7 @@ ORDER BY
   date;
 """
 
+# DP칩 사용(비귀속) data
 arena_ticket_consumption_query = """
 WITH
   ParsedData AS (
@@ -167,11 +198,15 @@ WITH
       CAST(JSON_EXTRACT_SCALAR(contents, '$.beforeValue') AS INT64) AS beforeValue,
       CAST(JSON_EXTRACT_SCALAR(contents, '$.afterValue') AS INT64) AS afterValue
     FROM
-      `mgmt-2023.mongodb_dataset.production-mongodb-internal-table`
+      `somaz-bigquery.mongodb_dataset.production-mongodb-internal-table`
     WHERE
       reason = '/user/arenaTicket/charge'
       AND collectionName IN UNNEST(["consume_material"])
-      AND PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time) >= TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), MONTH)
+      AND (
+        CAST(PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time) AS DATE) BETWEEN DATE_TRUNC(CURRENT_DATE(), MONTH) AND CURRENT_DATE()
+        OR
+        CAST(PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time) AS DATE) = LAST_DAY(DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH), MONTH)
+      )
   ),
   CalculatedData AS (
     SELECT
@@ -194,16 +229,21 @@ ORDER BY
   date;
 """
 
+# 승급횟수 data
 character_gradeup_query = """
 SELECT
   FORMAT_DATE("%Y-%m-%d", PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time)) AS date,
   COUNT(*) as count
 FROM
-  `somaz-biguqery.mongodb_dataset.production-mongodb-internal-table`
+  `somaz-bigquery.mongodb_dataset.production-mongodb-internal-table`
 WHERE
   reason = '/character/gradeup'
   AND collectionName IN UNNEST(["grade_up_character"])
-  AND PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time) >= TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), MONTH)
+  AND (
+    DATE(PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time)) = LAST_DAY(CURRENT_DATE(), MONTH)
+    OR
+    DATE(PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time)) = LAST_DAY(CURRENT_DATE() - INTERVAL 1 MONTH, MONTH)
+  )
 GROUP BY
   date
 ORDER BY

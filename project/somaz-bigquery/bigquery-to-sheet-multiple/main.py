@@ -65,35 +65,49 @@ def update_sheet_for_item(worksheet, results, item_name, column, date):
     except gspread.exceptions.CellNotFound:
         logging.warning(f"Date {date} not found in the sheet for item {item_name}.")
 
+# 일별 아레나 상점 아이템별 구매 수량 쿼리
 def complex_query_1(client):
     # Define and execute the complex query
     complex_query_1 = """
     WITH ParsedData AS (
         SELECT
             PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time) AS time,
-            CAST(JSON_EXTRACT_SCALAR(contents, '$.reward.dataId') AS INT64) AS dataId,
-            CAST(JSON_EXTRACT_SCALAR(contents, '$.reward.quantity') AS INT64) AS quantity
+            CAST (JSON_EXTRACT_SCALAR(contents, '$.reward.dataId') AS INT64) AS dataId,
+            CAST (JSON_EXTRACT_SCALAR(contents, '$.reward.quantity') AS INT64) AS quantity
         FROM
             `somaz-bigquery.mongodb_dataset.production-mongodb-internal-table`
         WHERE
-            reason = '/market/flower-shop/buy'
+            reason = '/arena/season-shop/buy'
             AND collectionName IN UNNEST(["payment_material", "payment_hero_gacha"])
-            AND PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time) >= TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), MONTH)
+            AND (
+                CAST(PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time) AS DATE) BETWEEN DATE_TRUNC(CURRENT_DATE(), MONTH) AND CURRENT_DATE()
+                OR
+                CAST(PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time) AS DATE) = LAST_DAY(DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH), MONTH)
+            )
     ),
     ProcessedData AS (
         SELECT
             FORMAT_DATE('%Y-%m-%d', time) AS date,
             CASE
-                WHEN dataId = 400000 THEN '소머즈 링크'
-                WHEN dataId = 400001 THEN '소머즈 에일'
+                WHEN dataId = 400000 THEN '스피릿 링크'
+                WHEN dataId = 400001 THEN '파라도스 에일'
 
-                WHEN dataId = 451000 THEN '하급 나무 승급서'
-                WHEN dataId = 451010 THEN '하급 꽃 승급서'
-                WHEN dataId = 451020 THEN '하급 곤충 승급서'
+                WHEN dataId = 451000 THEN '하급 화염 승급서'
+                WHEN dataId = 451010 THEN '하급 냉기 승급서'
+                WHEN dataId = 451020 THEN '하급 자연 승급서'
+                WHEN dataId = 451030 THEN '하급 기계 승급서'
+                WHEN dataId = 451040 THEN '하급 빛 승급서'
+                WHEN dataId = 451050 THEN '하급 암흑 승급서'
 
-                WHEN dataId = 451001 THEN '중급 나무 승급서'
-                WHEN dataId = 451011 THEN '중급 꽃 승급서'
-                WHEN dataId = 451021 THEN '중급 곤충 승급서'
+                WHEN dataId = 451001 THEN '중급 화염 승급서'
+                WHEN dataId = 451011 THEN '중급 냉기 승급서'
+                WHEN dataId = 451021 THEN '중급 자연 승급서'
+                WHEN dataId = 451031 THEN '중급 기계 승급서'
+                WHEN dataId = 451041 THEN '중급 빛 승급서'
+                WHEN dataId = 451051 THEN '중급 암흑 승급서'
+
+                WHEN dataId = 451100 THEN '차원의 시계'
+                WHEN dataId = 451100 THEN '염색약'
 
                 ELSE 'Unknown Item'
             END AS itemName,
@@ -121,18 +135,27 @@ def complex_query_1(client):
 def get_complex_query_1_mapping():
     # Map each item to its corresponding column in the sheet
     return {
-        "소머즈 링크": "N",
-        "소머즈 에일": "O",
-        "하급 나무 승급서": "P",
-        "하급 꽃 승급서": "Q",
-        "하급 곤충 승급서": "R",
-        "중급 나무 승급서": "V",
-        "중급 꽃 승급서": "W",
-        "중급 곤충 승급서": "X"
+        "스피릿 링크": "N",
+        "파라도스 에일": "O",
+        "하급 화염 승급서": "P",
+        "하급 냉기 승급서": "Q",
+        "하급 자연 승급서": "R",
+        "하급 기계 승급서": "S",
+        "하급 빛 승급서": "T",
+        "하급 암흑 승급서": "U",
+        "중급 화염 승급서": "V",
+        "중급 냉기 승급서": "W",
+        "중급 자연 승급서": "X",
+        "중급 기계 승급서": "Y",
+        "중급 빛 승급서": "Z",
+        "중급 암흑 승급서": "AA",
+        "차원의 시계": "AB",
+        "염색약": "AC"
 
         # ... Add mappings for other items ...
     }
 
+# DSP_ssn 쿼리 (시즌보상)
 def complex_query_2(client):
 
     complex_query_2 = """
@@ -146,7 +169,11 @@ def complex_query_2(client):
         WHERE
             reason = '/inventory/pack/reveal'
             AND collectionName IN UNNEST(["reveal_hero_gacha_pack"])
-            AND PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time) >= TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), MONTH)
+            AND (
+                CAST(PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time) AS DATE) BETWEEN DATE_TRUNC(CURRENT_DATE(), MONTH) AND CURRENT_DATE()
+                OR
+                CAST(PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time) AS DATE) = LAST_DAY(DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH), MONTH)
+            )
     ),
     UnwoundData AS (
         SELECT
@@ -199,6 +226,7 @@ def get_complex_query_2_mapping():
         # ... Add mappings for other items ...
     }
 
+# DSP_sct 쿼리 (스카우트)
 def complex_query_3(client):
     complex_query_3 = """
     WITH ParsedData AS (
@@ -211,7 +239,11 @@ def complex_query_3(client):
         WHERE
             reason = '/character/breeding'
             AND collectionName IN UNNEST(["payment_character"])
-            AND PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time) >= TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), MONTH)
+            AND (
+                CAST(PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time) AS DATE) BETWEEN DATE_TRUNC(CURRENT_DATE(), MONTH) AND CURRENT_DATE()
+                OR
+                CAST(PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time) AS DATE) = LAST_DAY(DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH), MONTH)
+            )
     )
     SELECT
         date,
@@ -238,6 +270,7 @@ def get_complex_query_3_mapping():
         "레전더리": "AV"
     }
 
+# DSP_grd 쿼리 (승급)
 def complex_query_4(client):
     complex_query_4 = """
     WITH ParsedData AS (
@@ -249,7 +282,11 @@ def complex_query_4(client):
         WHERE
             reason = '/character/gradeup'
             AND collectionName IN UNNEST(["consume_character"])
-            AND PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time) >= TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), MONTH)
+            AND (
+                CAST(PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time) AS DATE) BETWEEN DATE_TRUNC(CURRENT_DATE(), MONTH) AND CURRENT_DATE()
+                OR
+                CAST(PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time) AS DATE) = LAST_DAY(DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH), MONTH)
+            )
     )
     SELECT
         date,
@@ -276,18 +313,23 @@ def get_complex_query_4_mapping():
         "레전드": "BP"
     }
 
+# DSP_lvl 쿼리 (레벨업)
 def complex_query_5(client):
     complex_query_5 = """
     WITH ParsedData AS (
-    SELECT
-        FORMAT_DATE('%Y-%m-%d', PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time)) AS date,
-        CAST(JSON_EXTRACT_SCALAR(contents, '$.usedCharacter.actorId') AS INT64) AS dataId
-    FROM
-        `somaz-bigquery.mongodb_dataset.production-mongodb-internal-table`
-    WHERE
-        reason = '/character/level/up'
-        AND collectionName IN UNNEST(["consume_character"])
-        AND PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time) >= TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), MONTH)
+        SELECT
+            FORMAT_DATE('%Y-%m-%d', PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time)) AS date,
+            CAST(JSON_EXTRACT_SCALAR(contents, '$.usedCharacter.actorId') AS INT64) AS dataId
+        FROM
+            `somaz-bigquery.mongodb_dataset.production-mongodb-internal-table`
+        WHERE
+            reason = '/character/level/up'
+            AND collectionName IN UNNEST(["consume_character"])
+            AND (
+                CAST(PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time) AS DATE) BETWEEN DATE_TRUNC(CURRENT_DATE(), MONTH) AND CURRENT_DATE()
+                OR
+                CAST(PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time) AS DATE) = LAST_DAY(DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH), MONTH)
+            )
     )
     SELECT
         date,
@@ -317,4 +359,3 @@ def get_complex_query_5_mapping():
 
 if __name__ == "__main__":
     update_multiple_datas_in_sheets(None)
-

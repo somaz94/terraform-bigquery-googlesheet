@@ -20,23 +20,37 @@ def update_wallet_datas_in_sheets(request):
         gc = gspread.authorize(creds)
         sh = gc.open_by_key(os.getenv('SHEET_ID'))
         worksheet = sh.worksheet('Somaz_Community')
-        yesterday = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
+        
+        # Determine the date to query for
+        today = datetime.now()
+        if today.day == 1:
+            # If it's the first day of the month, get the last day of the previous month
+            date_to_query = get_last_day_of_previous_month()
+        else:
+            # Otherwise, just get yesterday's date
+            date_to_query = (today - timedelta(days=1)).strftime("%Y-%m-%d")
         
         # Execute query once and store results
         query_results = complex_query_1(client)
         query_results['date'] = pd.to_datetime(query_results['date']).dt.strftime('%Y-%m-%d')
 
-        # Update sheets with query results
-        execute_and_update_for_query(client, worksheet, yesterday, query_results, get_complex_query_1_mapping())
+        # Update sheets with query results for the determined date
+        execute_and_update_for_query(client, worksheet, date_to_query, query_results, get_complex_query_1_mapping())
 
         return "Data updated successfully", 200
     except Exception as e:
+        logging.error(f"An error occurred: {e}")
         return f"An error occurred: {e}", 500
 
 def execute_and_update_for_query(client, worksheet, date, query, column_mapping):
     results = query
     for item_name, column in column_mapping.items():
         update_sheet_for_item(worksheet, results, item_name, column, date)
+
+def get_last_day_of_previous_month():
+    first_day_of_current_month = datetime.now().replace(day=1)
+    last_day_of_previous_month = first_day_of_current_month - timedelta(days=1)
+    return last_day_of_previous_month.strftime("%Y-%m-%d")
 
 def update_sheet_for_item(worksheet, results, item_name, column, date):
     try:
@@ -77,8 +91,8 @@ def complex_query_1(client):
         FROM 
             user
         WHERE
-            YEAR(created_at) = YEAR(CURRENT_DATE())
-            AND MONTH(created_at) = MONTH(CURRENT_DATE())
+            (YEAR(created_at) = YEAR(CURRENT_DATE()) AND MONTH(created_at) = MONTH(CURRENT_DATE()))
+            OR (YEAR(created_at) = YEAR(CURRENT_DATE() - INTERVAL 1 MONTH) AND MONTH(created_at) = MONTH(CURRENT_DATE() - INTERVAL 1 MONTH))
         GROUP BY 
             DATE(created_at)
         '''
@@ -98,4 +112,3 @@ def get_complex_query_1_mapping():
 
 if __name__ == "__main__":
     update_wallet_datas_in_sheets(None)
-
