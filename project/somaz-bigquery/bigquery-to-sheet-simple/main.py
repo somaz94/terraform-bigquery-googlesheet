@@ -29,10 +29,10 @@ def update_data_in_sheets(request):
         # Execute queries and update sheet
         update_sheet_with_query(client, worksheet, nru_query, yesterday, 'B', 'date') # NRU data in column B
         update_sheet_with_query(client, worksheet, dau_query, yesterday, 'D', 'dt')  # DAU data in column D
-        update_sheet_with_query(client, worksheet, arena_finish_query, yesterday, 'G', 'date')  # 전투횟수 data in column G
-        update_sheet_with_query(client, worksheet, arena_finish_rewards_query, yesterday, 'I', 'date')  # DP 칩 획득(아레나)(비귀속) data in column I
-        update_sheet_with_query(client, worksheet, arena_ticket_consumption_query, yesterday, 'L', 'date') # DP칩 사용(비귀속) data in column L
-        update_sheet_with_query(client, worksheet, character_gradeup_query, yesterday, 'M', 'date')  # 승급횟수 data in column M
+        update_sheet_with_query(client, worksheet, arena_finish_query, yesterday, 'G', 'date')  
+        update_sheet_with_query(client, worksheet, arena_finish_rewards_query, yesterday, 'I', 'date')  
+        update_sheet_with_query(client, worksheet, arena_ticket_consumption_query, yesterday, 'L', 'date') 
+        update_sheet_with_query(client, worksheet, character_gradeup_query, yesterday, 'M', 'date')  
 
         logging.info("Daily data updated in Google Sheets for yesterday!")
         return "Daily data updated in Google Sheets for yesterday!", 200
@@ -137,7 +137,7 @@ ORDER BY
   dt;
 """
 
-# 전투횟수 data
+
 arena_finish_query = """
 SELECT
   FORMAT_DATE("%Y-%m-%d", PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time)) AS date,
@@ -158,7 +158,7 @@ ORDER BY
   date;
 """
 
-# DP 칩 획득(아레나)(비귀속) data
+
 arena_finish_rewards_query = """
 WITH
   ParsedData AS (
@@ -188,7 +188,7 @@ ORDER BY
   date;
 """
 
-# DP칩 사용(비귀속) data
+
 arena_ticket_consumption_query = """
 WITH
   ParsedData AS (
@@ -229,7 +229,7 @@ ORDER BY
   date;
 """
 
-# 승급횟수 data
+
 character_gradeup_query = """
 SELECT
   FORMAT_DATE("%Y-%m-%d", PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time)) AS date,
@@ -240,7 +240,8 @@ WHERE
   reason = '/character/gradeup'
   AND collectionName IN UNNEST(["grade_up_character"])
   AND (
-    DATE(PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time)) = LAST_DAY(CURRENT_DATE(), MONTH)
+    DATE(PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time)) BETWEEN 
+    DATE_TRUNC(CURRENT_DATE(), MONTH) AND CURRENT_DATE()
     OR
     DATE(PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time)) = LAST_DAY(CURRENT_DATE() - INTERVAL 1 MONTH, MONTH)
   )

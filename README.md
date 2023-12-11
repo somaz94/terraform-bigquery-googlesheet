@@ -30,6 +30,8 @@ This project integrates various data sources with Google Sheets and BigQuery usi
     - Functions for querying data from BigQuery and exporting to Google Sheets.
   - **📋 copy-formula-to-sheet**
     - Copies cells with formulas in Google Sheets.
+  - **📋 copy-formula-monthly-to-sheet**
+    - Copies cells with formulas in Google Sheets.
   - **💱 matic-value-to-sheet**
     - Fetches the daily price of Matic from [CoinGecko](https://www.coingecko.com/ko/%EC%BD%94%EC%9D%B8/polygon/historical_data#panel) and inputs it into Google Sheets.
   - **🔄 mongodb-to-bigquery**
@@ -52,6 +54,7 @@ This project integrates various data sources with Google Sheets and BigQuery usi
     - Imports Onchain data from Dune API to Google Sheets.
   - **🌐 onchain-quest2-daily-global-to-sheet**
     - Imports Onchain data from Dune API to Google Sheets.
+  ...
 
 <br/>
 

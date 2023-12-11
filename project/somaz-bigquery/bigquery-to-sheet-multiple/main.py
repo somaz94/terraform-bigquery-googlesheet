@@ -65,7 +65,7 @@ def update_sheet_for_item(worksheet, results, item_name, column, date):
     except gspread.exceptions.CellNotFound:
         logging.warning(f"Date {date} not found in the sheet for item {item_name}.")
 
-# 일별 아레나 상점 아이템별 구매 수량 쿼리
+
 def complex_query_1(client):
     # Define and execute the complex query
     complex_query_1 = """
@@ -107,7 +107,7 @@ def complex_query_1(client):
                 WHEN dataId = 451051 THEN '중급 암흑 승급서'
 
                 WHEN dataId = 451100 THEN '차원의 시계'
-                WHEN dataId = 451100 THEN '염색약'
+                WHEN dataId = 454001 THEN '염색약'
 
                 ELSE 'Unknown Item'
             END AS itemName,
@@ -155,7 +155,7 @@ def get_complex_query_1_mapping():
         # ... Add mappings for other items ...
     }
 
-# DSP_ssn 쿼리 (시즌보상)
+
 def complex_query_2(client):
 
     complex_query_2 = """
@@ -226,7 +226,7 @@ def get_complex_query_2_mapping():
         # ... Add mappings for other items ...
     }
 
-# DSP_sct 쿼리 (스카우트)
+
 def complex_query_3(client):
     complex_query_3 = """
     WITH ParsedData AS (
@@ -270,7 +270,7 @@ def get_complex_query_3_mapping():
         "레전더리": "AV"
     }
 
-# DSP_grd 쿼리 (승급)
+
 def complex_query_4(client):
     complex_query_4 = """
     WITH ParsedData AS (
@@ -278,7 +278,7 @@ def complex_query_4(client):
             FORMAT_DATE('%Y-%m-%d', PARSE_TIMESTAMP('%a %b %d %H:%M:%S UTC %Y', time)) AS date,
             CAST(JSON_EXTRACT_SCALAR(contents, '$.usedCharacter.actorId') AS INT64) AS dataId
         FROM
-            `somaz-bigquery.mongodb_dataset.production-mongodb-internal-table`
+            `mgmt-2023.mongodb_dataset.production-mongodb-internal-table`
         WHERE
             reason = '/character/gradeup'
             AND collectionName IN UNNEST(["consume_character"])
@@ -313,7 +313,7 @@ def get_complex_query_4_mapping():
         "레전드": "BP"
     }
 
-# DSP_lvl 쿼리 (레벨업)
+
 def complex_query_5(client):
     complex_query_5 = """
     WITH ParsedData AS (
