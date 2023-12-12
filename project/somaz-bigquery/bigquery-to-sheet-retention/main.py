@@ -1,11 +1,12 @@
 import os
 import gspread
+import time
+import pandas as pd
+import logging
 from google.cloud import bigquery
 from google.oauth2.service_account import Credentials
-import logging
 from datetime import datetime, timedelta
-import pandas as pd
-import time
+from gspread.exceptions import APIError
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -14,24 +15,27 @@ def update_retention_datas_in_sheets(request):
     try:
         # Setup and connect to BigQuery and Google Sheets
         client = bigquery.Client()
-        creds = Credentials.from_service_account_file('bigquery-dsp.json', scopes=[
+        creds = Credentials.from_service_account_file('bigquery.json', scopes=[
             'https://www.googleapis.com/auth/spreadsheets',
             'https://www.googleapis.com/auth/drive'
         ])
         gc = gspread.authorize(creds)
         sh = gc.open_by_key(os.getenv('SHEET_ID'))
-        worksheet = sh.worksheet('KPI_Somaz_Retention')
+        worksheet = sh.worksheet('Somaz_Retention')
 
-        # Execute the complex query and filter for yesterday's data
+        # Execute the complex query
         query_results = complex_query_1(client)
-        yesterday = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
+
+        # Filter for the last 30 days
+        end_date = datetime.now()
+        start_date = end_date - timedelta(days=60)  # Changed from 30 to 60 days
         query_results['dt'] = pd.to_datetime(query_results['_ec__9d__bc__ec__9e__90_']).dt.strftime('%Y-%m-%d')
-        query_results = query_results[query_results['dt'] == yesterday]
+        query_results = query_results[query_results['dt'].between(start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d'))]
 
         # Check if there are any results to update
         if query_results.empty:
-            logging.info("No data to update for yesterday.")
-            return "No data to update for yesterday.", 200
+            logging.info("No data to update for the last 30 days.")
+            return "No data to update for the last 30 days.", 200
 
         # Replace NaN or infinite values
         query_results.fillna("", inplace=True)
@@ -49,7 +53,7 @@ def complex_query_1(client):
     complex_query_1 = """
     SELECT * 
     FROM EXTERNAL_QUERY(
-        "somaz-bigquery.asia-northeast1.prod-somaz-db-connection", 
+        "somaz-bigquery.asia-northeast1.somaz-bigquery-game-log-db-connection", 
         '''
         SELECT 
           dt as '일자',
@@ -317,14 +321,37 @@ def update_sheet_with_complex_query_results(worksheet, results):
 
     # Check if we have any updates to perform
     if cell_updates:
-        # Execute batch updates in chunks to avoid hitting quota limits
-        for i in range(0, len(cell_updates), 60):
-            batch = cell_updates[i:i+60]
-            worksheet.batch_update(batch, value_input_option='USER_ENTERED')
-            logging.info(f"Updated cells from {batch[0]['range']} to {batch[-1]['range']}")
-            time.sleep(60)  # Wait for 60 seconds to respect the quota limit
+        # Initialize a counter for the number of requests
+        request_count = 0
+
+        for i in range(0, len(cell_updates), 30):
+            batch = cell_updates[i:i+30]
+            try:
+                worksheet.batch_update(batch, value_input_option='USER_ENTERED')
+                logging.info(f"Updated cells from {batch[0]['range']} to {batch[-1]['range']}")
+                request_count += 1
+
+                # Calculate the remaining seconds until the next minute
+                if request_count >= 55:
+                    now = datetime.now()
+                    seconds_until_next_minute = 61 - now.second
+                    logging.info(f"Approaching quota limit, waiting for {seconds_until_next_minute} seconds")
+                    time.sleep(seconds_until_next_minute)
+                    request_count = 0  # Reset the counter
+
+            except APIError as e:
+                # Check if the error is due to quota limits
+                if "Quota exceeded" in str(e):
+                    now = datetime.now()
+                    seconds_until_next_minute = 61 - now.second
+                    logging.info(f"Quota exceeded, waiting for {seconds_until_next_minute} seconds")
+                    time.sleep(seconds_until_next_minute)
+                    request_count = 0  # Reset the counter
+                    worksheet.batch_update(batch, value_input_option='USER_ENTERED')
+                else:
+                    # If the error is not due to quota limits, re-raise it
+                    raise
 
 if __name__ == "__main__":
     update_retention_datas_in_sheets(None)
-
 
