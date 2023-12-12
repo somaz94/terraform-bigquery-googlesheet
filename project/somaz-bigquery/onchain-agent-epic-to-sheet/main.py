@@ -92,13 +92,12 @@ def write_to_sheet(worksheet, row_number, data):
         'BE': data.get('민팅 수량', 0),  # Minting Quantity
         'CD': data.get('퀘스트 소각 수량', 0),  # Quest Burn Quantity
         'CI': data.get('다오 소각 수량', 0),  # Dao Burn Quantity
-        # 'CS': data.get('최고 가격(/NFT)', 0)  # Highest Price(/NFT) - Special handling below
     }
 
     # Update cell values and apply center alignment for regular columns
     for col, value in columns.items():
         cell = f'{col}{row_number}'
-        worksheet.update(cell, value)
+        worksheet.update(cell, value, value_input_option='USER_ENTERED')
 
         # Set cell format to center alignment
         worksheet.format(cell, {
@@ -110,11 +109,15 @@ def write_to_sheet(worksheet, row_number, data):
     highest_price_cell = f'CS{row_number}'
     highest_price = data.get('최고 가격(/NFT)')
     if highest_price is not None:
-        worksheet.update(highest_price_cell, highest_price)
+        # Update the cell as a string if there is a value
+        worksheet.update(highest_price_cell, str(highest_price), value_input_option='USER_ENTERED')
     else:
-        # Copy value from the previous row if current row's value is None
+        # Directly copy the value from the previous row as a string
         previous_row_value = worksheet.acell(f'CS{row_number - 1}').value
-        worksheet.update(highest_price_cell, previous_row_value)
+        if previous_row_value:
+            worksheet.update(highest_price_cell, previous_row_value, value_input_option='USER_ENTERED')
+        else:
+            print("Previous row has no value for highest price.")
 
     # Set cell format to center alignment for '최고 가격(/NFT)' column
     worksheet.format(highest_price_cell, {
