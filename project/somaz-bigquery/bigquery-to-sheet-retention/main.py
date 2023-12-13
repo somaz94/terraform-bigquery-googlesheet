@@ -15,7 +15,7 @@ def update_retention_datas_in_sheets(request):
     try:
         # Setup and connect to BigQuery and Google Sheets
         client = bigquery.Client()
-        creds = Credentials.from_service_account_file('bigquery.json', scopes=[
+        creds = Credentials.from_service_account_file('bigquery-dsp.json', scopes=[
             'https://www.googleapis.com/auth/spreadsheets',
             'https://www.googleapis.com/auth/drive'
         ])
@@ -53,7 +53,7 @@ def complex_query_1(client):
     complex_query_1 = """
     SELECT * 
     FROM EXTERNAL_QUERY(
-        "somaz-bigquery.asia-northeast1.somaz-bigquery-game-log-db-connection", 
+        "somaz-bigquery.asia-northeast1.somaz-game-log-db-connection", 
         '''
         SELECT 
           dt as '일자',
@@ -319,38 +319,29 @@ def update_sheet_with_complex_query_results(worksheet, results):
                     'values': [[value]]
                 })
 
-    # Check if we have any updates to perform
-    if cell_updates:
-        # Initialize a counter for the number of requests
-        request_count = 0
+    request_times = []  # Store the times when requests are made
 
-        for i in range(0, len(cell_updates), 30):
-            batch = cell_updates[i:i+30]
-            try:
-                worksheet.batch_update(batch, value_input_option='USER_ENTERED')
-                logging.info(f"Updated cells from {batch[0]['range']} to {batch[-1]['range']}")
-                request_count += 1
+    for i in range(0, len(cell_updates), 30):
+        now = time.time()  # Current time in seconds
+        request_times = [t for t in request_times if now - t < 60]  # Keep only the last minute's requests
 
-                # Calculate the remaining seconds until the next minute
-                if request_count >= 55:
-                    now = datetime.now()
-                    seconds_until_next_minute = 61 - now.second
-                    logging.info(f"Approaching quota limit, waiting for {seconds_until_next_minute} seconds")
-                    time.sleep(seconds_until_next_minute)
-                    request_count = 0  # Reset the counter
+        if len(request_times) >= 55:  # If near the limit, wait
+            time_to_wait = 61 - (now - request_times[0])
+            logging.info(f"Approaching quota limit, waiting for {time_to_wait} seconds")
+            time.sleep(time_to_wait)
+            request_times = [t for t in request_times if now - t < 60]
 
-            except APIError as e:
-                # Check if the error is due to quota limits
-                if "Quota exceeded" in str(e):
-                    now = datetime.now()
-                    seconds_until_next_minute = 61 - now.second
-                    logging.info(f"Quota exceeded, waiting for {seconds_until_next_minute} seconds")
-                    time.sleep(seconds_until_next_minute)
-                    request_count = 0  # Reset the counter
-                    worksheet.batch_update(batch, value_input_option='USER_ENTERED')
-                else:
-                    # If the error is not due to quota limits, re-raise it
-                    raise
+        batch = cell_updates[i:i+30]
+        try:
+            worksheet.batch_update(batch, value_input_option='USER_ENTERED')
+            logging.info(f"Updated cells from {batch[0]['range']} to {batch[-1]['range']}")
+            request_times.append(time.time())  # Log the time of the request
+        except APIError as e:
+            if "Quota exceeded" in str(e):
+                logging.info("Quota exceeded, adjusting batch size and retrying")
+                # Implement logic to handle quota exceedance, such as reducing batch size
+            else:
+                raise
 
 if __name__ == "__main__":
     update_retention_datas_in_sheets(None)
