@@ -4,6 +4,11 @@ This project integrates various data sources with Google Sheets and BigQuery usi
 
 <br/>
 
+## Data Architecture
+![Data Automation Workflow](https://github.com/somaz94/terraform-bigquery-googlesheet/assets/112675579/bef53a70-e70b-4cdf-b5cf-732349c6998b)
+
+<br/>
+
 ## 📁 File Structure
 
 - **📜 LICENSE**: Contains the MIT License details for this project.
