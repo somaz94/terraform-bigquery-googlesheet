@@ -18,7 +18,7 @@ creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FI
 # Initialize the Sheets API client
 gc = gspread.authorize(creds)
 
-def exponential_backoff_retry(func, max_attempts=5, initial_wait=1.0, backoff_factor=2.0):
+def exponential_backoff_retry(func, max_attempts=10, initial_wait=2.0, backoff_factor=2.0):
     attempts = 0
     wait_time = initial_wait
     while attempts < max_attempts:
