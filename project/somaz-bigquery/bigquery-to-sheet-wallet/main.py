@@ -57,7 +57,9 @@ def update_sheet_for_item(worksheet, results, item_name, column, date):
         date_cell = find_date_cell(worksheet, date)
         if date_cell:
             cell = f'{column}{date_cell.row}'
-            date_data = int(results[results['date'] == date][item_name].fillna(0).iloc[0])
+            # Check for results for that date, set to 0 if not
+            filtered_results = results[results['date'] == date]
+            date_data = 0 if filtered_results.empty else int(filtered_results[item_name].fillna(0).iloc[0])
             
             # Log the update
             logging.info(f"Updating {cell} with {date_data} for {item_name}")
