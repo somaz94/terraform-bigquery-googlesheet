@@ -110,11 +110,15 @@ def write_to_sheet(worksheet, row_number, data):
     highest_price_cell = f'CR{row_number}'
     highest_price = data.get('최고 가격(/NFT)')
     if highest_price is not None:
-        worksheet.update(highest_price_cell, highest_price)
+        # Update the cell as a string if there is a value
+        worksheet.update(highest_price_cell, str(highest_price), value_input_option='USER_ENTERED')
     else:
-        # Copy value from the previous row if current row's value is None
+        # Directly copy the value from the previous row as a string
         previous_row_value = worksheet.acell(f'CR{row_number - 1}').value
-        worksheet.update(highest_price_cell, previous_row_value)
+        if previous_row_value:
+            worksheet.update(highest_price_cell, previous_row_value, value_input_option='USER_ENTERED')
+        else:
+            print("Previous row has no value for highest price.")
 
     # Set cell format to center alignment for '최고 가격(/NFT)' column
     worksheet.format(highest_price_cell, {
