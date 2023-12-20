@@ -106,50 +106,41 @@ def main(request):
             print(error_message)
             return jsonify({'error': error_message})
 
+        # 이전 달의 날짜를 'YYYY-MM' 형식으로 구하기
         previous_month = datetime.datetime.now().replace(day=1) - datetime.timedelta(days=1)
-        days_in_month = calendar.monthrange(previous_month.year, previous_month.month)[1]
+        previous_month_str = previous_month.strftime('%Y-%m')
 
-        # Define date ranges before using them
-        first_range = "1~ 14일" if days_in_month == 30 else "1~ 15일"
-        second_range = "15~30일" if days_in_month == 30 else "16~31일"
-        
-        # Mapping of English month names to Korean
-        month_names_english_to_korean = {
-            'January': '1월', 'February': '2월', 'March': '3월', 'April': '4월',
-            'May': '5월', 'June': '6월', 'July': '7월', 'August': '8월',
-            'September': '9월', 'October': '10월', 'November': '11월', 'December': '12월'
-        }
-        english_month_name = previous_month.strftime('%B')
-        previous_month_str_korean = month_names_english_to_korean[english_month_name]
-
+        # 집계 데이터 계산
         first_half_agg, second_half_agg = aggregate_data(global_data)
 
-        print(f"Aggregated data: First half: {first_half_agg}, Second half: {second_half_agg}")
-
+        # Google Sheets 접근 설정
         creds = Credentials.from_service_account_file('bigquery.json', scopes=['https://www.googleapis.com/auth/spreadsheets'])
         gc = gspread.authorize(creds)
         SHEET_ID = os.getenv('SHEET_ID')
         sh = gc.open_by_key(SHEET_ID)
         worksheet = sh.worksheet("[Quest]Premium")
 
-        print(f"Looking for month: {previous_month_str_korean}")
-        print(f"Looking for first range: {first_range}")
-        print(f"Looking for second range: {second_range}")
+        # 이전 달의 일수에 따른 범위 설정
+        days_in_month = calendar.monthrange(previous_month.year, previous_month.month)[1]
 
-        first_row_number = find_row_for_month_and_range(worksheet, previous_month_str_korean, first_range)
-        second_row_number = find_row_for_month_and_range(worksheet, previous_month_str_korean, second_range)
+        # 첫 번째 날짜 범위 설정
+        first_range = "1~ 14일" if previous_month.month == 2 or days_in_month == 30 else "1~ 15일"
+        
+        # 두 번째 날짜 범위 설정
+        if previous_month.month == 2:  # 2월인 경우
+            second_range = "15~29일" if calendar.isleap(previous_month.year) else "15~28일"
+        else:
+            second_range = "15~30일" if days_in_month == 30 else "16~31일"
 
-        print(f"Row numbers found: First range: {first_row_number}, Second range: {second_row_number}")
+        # 해당 월과 범위에 대한 행 번호 찾기
+        first_row_number = find_row_for_month_and_range(worksheet, previous_month_str, first_range)
+        second_row_number = find_row_for_month_and_range(worksheet, previous_month_str, second_range)
 
+        # 시트에 데이터 작성
         if first_row_number:
             write_to_sheet(worksheet, first_row_number, first_half_agg)
-        else:
-            print(f"No row found for the first range: {first_range}")
-
         if second_row_number:
             write_to_sheet(worksheet, second_row_number, second_half_agg)
-        else:
-            print(f"No row found for the second range: {second_range}")
 
         print("Data written to sheet successfully")
         return "Data written to sheet successfully", 200
@@ -158,5 +149,6 @@ def main(request):
         error_message = f"An error occurred: {e}"
         print(error_message)
         return jsonify({'error': error_message}), 500
+    
     
 
