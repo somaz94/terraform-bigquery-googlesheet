@@ -8,10 +8,16 @@ import time
 
 # Make sure to set 'DUNE_API_KEY' and 'SHEET_ID' in your environment variables.
 
+def get_yesterdays_date_utc():
+    # Get the current time in UTC and then subtract one day
+    utc_now = datetime.datetime.utcnow()
+    yesterdays_date_utc = utc_now - datetime.timedelta(days=1)
+    return yesterdays_date_utc.strftime('%Y-%m-%d')
+
 def fetch_data_from_dune():
     API_KEY = os.getenv('DUNE_API_KEY')
-    DAILY_QUERY_ID = ''  # Replace with your actual query ID
-    GLOBAL_QUERY_ID = '' # Replace with your actual query ID
+    DAILY_QUERY_ID = '2320785'  # Replace with your actual query ID
+    GLOBAL_QUERY_ID = '2418373'
 
     headers = {
         "Content-Type": "application/json",
@@ -60,20 +66,29 @@ def fetch_data_from_dune():
     daily_data = execute_query(DAILY_QUERY_ID)
     global_data = execute_query(GLOBAL_QUERY_ID)
 
-    # Determine which data to return
-    # Check if the '퀘스트 완료 수' (Quest Completion Count) is greater than 0 in daily data
-    if daily_data and any(row.get('퀘스트 완료 수', 0) > 0 for row in daily_data):
-        return daily_data
-    elif global_data and any(row.get('퀘스트 완료 수', 0) > 0 for row in global_data):
-        return global_data
-    else:
-        return None
+    print("Daily data:", daily_data)
+    print("Global data:", global_data)
 
-def get_yesterdays_date_utc():
-    # Get the current time in UTC and then subtract one day
-    utc_now = datetime.datetime.utcnow()
-    yesterdays_date_utc = utc_now - datetime.timedelta(days=1)
-    return yesterdays_date_utc.strftime('%Y-%m-%d')
+    yesterdays_date = get_yesterdays_date_utc()
+
+    def get_count_for_date(data, date):
+        for row in data:
+            if row.get('일자(KST)', '').startswith(date):
+                return row.get('퀘스트 완료 수', 0)
+        return 0
+
+    daily_count = get_count_for_date(daily_data, yesterdays_date)
+    global_count = get_count_for_date(global_data, yesterdays_date)
+
+    print("Daily count:", daily_count)
+    print("Global count:", global_count)
+
+    if global_count > daily_count:
+        return global_data
+    elif daily_count > 0:
+        return daily_data
+    else:
+        return [{'일자(KST)': yesterdays_date, '퀘스트 완료 수': 0}]
 
 def find_row_for_date(worksheet, date):
     date_column_values = worksheet.col_values(1)
