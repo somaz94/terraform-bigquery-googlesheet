@@ -69,30 +69,24 @@ def main(request):
         gc = gspread.authorize(creds)
         SHEET_ID = os.getenv('SHEET_ID')
         sh = gc.open_by_key(SHEET_ID)
-        worksheet = sh.worksheet("KPI_Table(Pack)")
+        worksheet = sh.worksheet("Somaz_Table(Pack)")
 
-        updates = []  # Initialize an empty list for batch updates
+        updates = []
         for row in global_data:
             date_key = datetime.datetime.strptime(row['일자'], '%Y-%m-%d').strftime('%Y-%m-%d')
             row_number = find_row_for_date(worksheet, date_key)
-            if row_number is not None:
-                # Prepare the update data
+            if row_number:
+                update_values = [
+                    (int(row[key]) if row[key] is not None else '') for key in [
+                        'Alpha Section Pack', 'Beta Section Pack', 'Moderator Rare Pack',
+                        'Ambassador Rare Pack', 'Welcome Rare Pack', 'Face Wallet Rare Pack',
+                        'IndiGG Rare Pack', 'GUILDFI Rare Pack', 'Avocado Rare Pack',
+                        'JGG Rare Pack', 'Pacific Meta Rare Pack', 'Altverse Rare Pack'
+                    ]
+                ]
                 update = {
                     'range': f'AL{row_number}:AW{row_number}',
-                    'values': [[
-                        row.get('Alpha Section Pack', '') or '',
-                        row.get('Beta Section Pack', '') or '',
-                        row.get('Moderator Rare Pack', '') or '',
-                        row.get('Ambassador Rare Pack', '') or '',
-                        row.get('Welcome Rare Pack', '') or '',
-                        row.get('Face Wallet Rare Pack', '') or '',
-                        row.get('IndiGG Rare Pack', '') or '',
-                        row.get('GUILDFI Rare Pack', '') or '',
-                        row.get('Avocado Rare Pack', '') or '',
-                        row.get('JGG Rare Pack', '') or '',
-                        row.get('Pacific Meta Rare Pack', '') or '',
-                        row.get('Altverse Rare Pack', '') or ''
-                    ]]
+                    'values': [update_values]
                 }
                 print(f"Preparing update for row {row_number}: {update}")  # Debugging: print each prepared update
                 updates.append(update)

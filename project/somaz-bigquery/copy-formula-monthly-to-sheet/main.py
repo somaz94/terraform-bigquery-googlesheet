@@ -7,6 +7,7 @@ from google.oauth2 import service_account
 from gspread.exceptions import CellNotFound
 from gspread.utils import a1_to_rowcol
 from gspread import Cell
+from googleapiclient.errors import HttpError as APIError
 
 # Setup the Sheets and GA4 Data API
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/analytics']
@@ -51,13 +52,13 @@ def get_row_for_date(all_dates, date_str):
         print(f"Date '{date_str}' not found in the sheet.")
         return None
 
-def exponential_backoff_retry(func, max_attempts=3, initial_wait=5.0, backoff_factor=2.0):
+def exponential_backoff_retry(func, max_attempts=5, initial_wait=1.0, backoff_factor=2.0):
     attempts = 0
     wait_time = initial_wait
     while attempts < max_attempts:
         try:
             return func()
-        except gspread.exceptions.APIError as e:
+        except APIError as e:
             if e.response.status_code == 429:  # Quota exceeded
                 print(f"Quota exceeded, retrying in {wait_time} seconds...")
                 time.sleep(wait_time)
@@ -74,17 +75,13 @@ def wait_until_next_minute():
     print(f"Waiting for {wait_time} seconds until the start of the next minute...")
     time.sleep(wait_time)
 
-def update_cells_in_chunks(sheet, cells, chunk_size=1):
+def update_cells_in_chunks(sheet, cells, chunk_size=10):
     for i in range(0, len(cells), chunk_size):
         chunk = cells[i:i + chunk_size]
-        try:
-            sheet.update_cells(chunk, value_input_option='USER_ENTERED')
-            time.sleep(1)  # Ensure at least 1 second delay between each API call
-        except gspread.exceptions.APIError as e:
-            if e.response.status_code == 429:  # Quota exceeded
-                wait_until_next_minute()  # Wait until the start of the next minute
-            else:
-                raise  # Reraise for non-quota errors
+        exponential_backoff_retry(lambda: sheet.update_cells(chunk, value_input_option='USER_ENTERED'))
+        print(f"Updated chunk of {chunk_size} cells, waiting before next batch...")
+        time.sleep(2)  # Increased delay to 2 seconds between batches
+
 
 def copy_formulas_for_date(sheet, column_letter, date_row, prev_date_row, updated_cells):
     """Prepare formulas from previous date row to be updated in the given date row for a specific column."""

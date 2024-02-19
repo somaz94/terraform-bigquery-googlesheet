@@ -76,20 +76,19 @@ def main(request):
             date_key = datetime.datetime.strptime(row['일자'], '%Y-%m-%d').strftime('%Y-%m-%d')
             row_number = find_row_for_date(worksheet, date_key)
             if row_number is not None:
-                # Prepare the update data
+                # Prepare update values
+                update_values = [
+                    (int(row[key]) if row[key] is not None else '') for key in [
+                        'Provision Alpha Pack', 'Provision Beta Pack', 'Provision Gamma Pack',
+                        'Basic Rare Pack 1', 'Basic Rare Pack 2',
+                        'Basic Legend Alpha Pack 1', 'Basic Legend Alpha Pack 2',
+                        'Advanced Epic Pack 1', 'Advanced Epic Pack 2'
+                    ]
+                ]
+
                 update = {
                     'range': f'X{row_number}:AF{row_number}',
-                    'values': [[
-                        row.get('Provision Alpha Pack', '') or '',
-                        row.get('Provision Beta Pack', '') or '',
-                        row.get('Provision Gamma Pack', '') or '',
-                        row.get('Basic Rare Pack 1', '') or '',
-                        row.get('Basic Rare Pack 2', '') or '',
-                        row.get('Basic Legend Alpha Pack 1', '') or '',
-                        row.get('Basic Legend Alpha Pack 2', '') or '',
-                        row.get('Advanced Epic Pack 1', '') or '',
-                        row.get('Advanced Epic Pack 2', '') or ''
-                    ]]
+                    'values': [update_values]
                 }
                 print(f"Preparing update for row {row_number}: {update}")  # Debugging: print each prepared update
                 updates.append(update)
