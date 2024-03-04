@@ -14,7 +14,7 @@ def retrieve_and_save_logs(request):
     log_storage_bucket = os.getenv('LOG_STORAGE_BUCKET')
     tracked_urls = [
         "https://somaz.cdn.link/Setup.exe",
-        "https://somaz.cdn.link/Update.zip",
+        "https://somaz.cdn.link/Update.zip"
     ]
 
     client = logging.Client(project=project_id)
@@ -58,15 +58,14 @@ def deduplicate_entries(entries):
 
 def upload_summary(blob, yesterday, count):
     existing_summary = blob.download_as_text() if blob.exists() else ""
-    new_entry = f"{yesterday}: {count}"
-
     # Parse the existing summary
     daily_counts, monthly_totals = parse_existing_summary(existing_summary)
 
-    # Update daily counts and monthly totals
+    # Update daily counts and monthly totals with year information
     daily_counts[yesterday] = count
-    month_str = datetime.strptime(yesterday, '%Y-%m-%d').strftime('%B')
-    monthly_totals[month_str] = monthly_totals.get(month_str, 0) + count
+    year = datetime.strptime(yesterday, '%Y-%m-%d').year  # Year extraction
+    month_str = datetime.strptime(yesterday, '%Y-%m-%d').strftime('%B')  # Month extraction
+    monthly_totals[f"{year}_{month_str}"] = monthly_totals.get(f"{year}_{month_str}", 0) + count  # Year-Month key used
 
     # Generate the updated summary
     final_summary = generate_final_summary(daily_counts, monthly_totals)
@@ -76,32 +75,29 @@ def upload_summary(blob, yesterday, count):
 
 def parse_existing_summary(existing_summary):
     """
-    Parses the existing summary into daily counts and monthly totals.
+    Parses the existing summary into daily counts and monthly totals, expecting year-month keys for monthly totals.
     """
     daily_counts = {}
     monthly_totals = defaultdict(int)
     for line in existing_summary.split('\n'):
         if line.strip() and "Total_Count" not in line:
             date_str, count_str = line.split(':')
-            daily_counts[date_str.strip()] = int(count_str.split()[0])
+            daily_counts[date_str.strip()] = int(count_str.strip())
         elif "Total_Count" in line:
-            month, total_str = line.split('_Total_Count:')
-            monthly_totals[month.strip()] = int(total_str)
+            year_month, total_str = line.split('_Total_Count:')
+            monthly_totals[year_month.strip()] = int(total_str.strip())
 
     return daily_counts, monthly_totals
 
 def generate_final_summary(daily_counts, monthly_totals):
     """
-    Combines daily counts and monthly totals into a final summary string.
+    Combines daily counts and monthly totals into a final summary string, using year-month keys for monthly totals.
     """
     # Sort daily counts by date
     sorted_daily_counts = dict(sorted(daily_counts.items(), key=lambda item: datetime.strptime(item[0], '%Y-%m-%d')))
     daily_counts_section = '\n'.join(f"{date}: {count}" for date, count in sorted_daily_counts.items())
     
-    # Sort monthly totals by date (assuming the month keys are full month names)
-    months_order = ['January', 'February', 'March', 'April', 'May', 'June', 
-                    'July', 'August', 'September', 'October', 'November', 'December']
-    sorted_monthly_totals = {month: monthly_totals[month] for month in months_order if month in monthly_totals}
-    monthly_totals_section = '\n'.join(f"{month}_Total_Count: {total}" for month, total in sorted_monthly_totals.items())
+    # No need to sort monthly_totals as keys are already in year_month format
+    monthly_totals_section = '\n'.join(f"{year_month}_Total_Count: {total}" for year_month, total in monthly_totals.items())
 
     return f"{daily_counts_section}\n\n{monthly_totals_section}"
