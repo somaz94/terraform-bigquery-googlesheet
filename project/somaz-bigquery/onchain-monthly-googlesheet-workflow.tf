@@ -4,15 +4,15 @@ resource "null_resource" "onchain_quest2_daily_global_monthly_sheet_zip_cloud_fu
 
   provisioner "local-exec" {
     command = <<EOT
-      cd ./onchain-quest2-daily-global-monthly-to-sheet
+      cd ./cloud-functions/onchain-quest2-daily-global-monthly-to-sheet
       zip -r onchain-quest2-daily-global-monthly-to-sheet.zip main.py requirements.txt bigquery.json
     EOT
   }
 
   triggers = {
-    main_content_hash         = filesha256("./onchain-quest2-daily-global-monthly-to-sheet/main.py")
-    requirements_content_hash = filesha256("./onchain-quest2-daily-global-monthly-to-sheet/requirements.txt")
-    json_content_hash         = filesha256("./onchain-quest2-daily-global-monthly-to-sheet/bigquery.json")
+    main_content_hash         = filesha256("./cloud-functions/onchain-quest2-daily-global-monthly-to-sheet/main.py")
+    requirements_content_hash = filesha256("./cloud-functions/onchain-quest2-daily-global-monthly-to-sheet/requirements.txt")
+    json_content_hash         = filesha256("./cloud-functions/onchain-quest2-daily-global-monthly-to-sheet/bigquery.json")
   }
 }
 
@@ -21,7 +21,7 @@ resource "google_storage_bucket_object" "onchain_quest2_daily_global_monthly_she
 
   name   = "source/onchain-quest2-daily-global-monthly-to-sheet.zip"
   bucket = google_storage_bucket.cloud_function_storage.name
-  source = "./onchain-quest2-daily-global-monthly-to-sheet/onchain-quest2-daily-global-monthly-to-sheet.zip"
+  source = "./cloud-functions/onchain-quest2-daily-global-monthly-to-sheet/onchain-quest2-daily-global-monthly-to-sheet.zip"
 }
 
 ## cloud_function
@@ -73,15 +73,15 @@ resource "null_resource" "onchain_quest2_weekly_monthly_sheet_zip_cloud_function
 
   provisioner "local-exec" {
     command = <<EOT
-      cd ./onchain-quest2-weekly-monthly-to-sheet
+      cd ./cloud-functions/onchain-quest2-weekly-monthly-to-sheet
       zip -r onchain-quest2-weekly-monthly-to-sheet.zip main.py requirements.txt bigquery.json
     EOT
   }
 
   triggers = {
-    main_content_hash         = filesha256("./onchain-quest2-weekly-monthly-to-sheet/main.py")
-    requirements_content_hash = filesha256("./onchain-quest2-weekly-monthly-to-sheet/requirements.txt")
-    json_content_hash         = filesha256("./onchain-quest2-weekly-monthly-to-sheet/bigquery.json")
+    main_content_hash         = filesha256("./cloud-functions/onchain-quest2-weekly-monthly-to-sheet/main.py")
+    requirements_content_hash = filesha256("./cloud-functions/onchain-quest2-weekly-monthly-to-sheet/requirements.txt")
+    json_content_hash         = filesha256("./cloud-functions/onchain-quest2-weekly-monthly-to-sheet/bigquery.json")
   }
 }
 
@@ -90,7 +90,7 @@ resource "google_storage_bucket_object" "onchain_quest2_weekly_monthly_sheet_clo
 
   name   = "source/onchain-quest2-weekly-monthly-to-sheet.zip"
   bucket = google_storage_bucket.cloud_function_storage.name
-  source = "./onchain-quest2-weekly-monthly-to-sheet/onchain-quest2-weekly-monthly-to-sheet.zip"
+  source = "./cloud-functions/onchain-quest2-weekly-monthly-to-sheet/onchain-quest2-weekly-monthly-to-sheet.zip"
 }
 
 ## cloud_function
@@ -142,15 +142,15 @@ resource "null_resource" "onchain_quest2_premium_monthly_sheet_zip_cloud_functio
 
   provisioner "local-exec" {
     command = <<EOT
-      cd ./onchain-quest2-premium-monthly-to-sheet
+      cd ./cloud-functions/onchain-quest2-premium-monthly-to-sheet
       zip -r onchain-quest2-premium-monthly-to-sheet.zip main.py requirements.txt bigquery.json
     EOT
   }
 
   triggers = {
-    main_content_hash         = filesha256("./onchain-quest2-premium-monthly-to-sheet/main.py")
-    requirements_content_hash = filesha256("./onchain-quest2-premium-monthly-to-sheet/requirements.txt")
-    json_content_hash         = filesha256("./onchain-quest2-premium-monthly-to-sheet/bigquery.json")
+    main_content_hash         = filesha256("./cloud-functions/onchain-quest2-premium-monthly-to-sheet/main.py")
+    requirements_content_hash = filesha256("./cloud-functions/onchain-quest2-premium-monthly-to-sheet/requirements.txt")
+    json_content_hash         = filesha256("./cloud-functions/onchain-quest2-premium-monthly-to-sheet/bigquery.json")
   }
 }
 
@@ -159,7 +159,7 @@ resource "google_storage_bucket_object" "onchain_quest2_premium_monthly_sheet_cl
 
   name   = "source/onchain-quest2-premium-monthly-to-sheet.zip"
   bucket = google_storage_bucket.cloud_function_storage.name
-  source = "./onchain-quest2-premium-monthly-to-sheet/onchain-quest2-premium-monthly-to-sheet.zip"
+  source = "./cloud-functions/onchain-quest2-premium-monthly-to-sheet/onchain-quest2-premium-monthly-to-sheet.zip"
 }
 
 ## cloud_function
@@ -211,15 +211,15 @@ resource "null_resource" "onchain_pack_contribution_compensation_monthly_sheet_z
 
   provisioner "local-exec" {
     command = <<EOT
-      cd ./onchain-pack-contribution-compensation-monthly-to-sheet
+      cd ./cloud-functions/onchain-pack-contribution-compensation-monthly-to-sheet
       zip -r onchain-pack-contribution-compensation-monthly-to-sheet.zip main.py requirements.txt bigquery.json
     EOT
   }
 
   triggers = {
-    main_content_hash         = filesha256("./onchain-pack-contribution-compensation-monthly-to-sheet/main.py")
-    requirements_content_hash = filesha256("./onchain-pack-contribution-compensation-monthly-to-sheet/requirements.txt")
-    json_content_hash         = filesha256("./onchain-pack-contribution-compensation-monthly-to-sheet/bigquery.json")
+    main_content_hash         = filesha256("./cloud-functions/onchain-pack-contribution-compensation-monthly-to-sheet/main.py")
+    requirements_content_hash = filesha256("./cloud-functions/onchain-pack-contribution-compensation-monthly-to-sheet/requirements.txt")
+    json_content_hash         = filesha256("./cloud-functions/onchain-pack-contribution-compensation-monthly-to-sheet/bigquery.json")
   }
 }
 
@@ -228,7 +228,7 @@ resource "google_storage_bucket_object" "onchain_pack_contribution_compensation_
 
   name   = "source/onchain-pack-contribution-compensation-monthly-to-sheet.zip"
   bucket = google_storage_bucket.cloud_function_storage.name
-  source = "./onchain-pack-contribution-compensation-monthly-to-sheet/onchain-pack-contribution-compensation-monthly-to-sheet.zip"
+  source = "./cloud-functions/onchain-pack-contribution-compensation-monthly-to-sheet/onchain-pack-contribution-compensation-monthly-to-sheet.zip"
 }
 
 ## cloud_function
@@ -280,15 +280,15 @@ resource "null_resource" "onchain_pack_airdrop_monthly_sheet_zip_cloud_function"
 
   provisioner "local-exec" {
     command = <<EOT
-      cd ./onchain-pack-airdrop-monthly-to-sheet
+      cd ./cloud-functions/onchain-pack-airdrop-monthly-to-sheet
       zip -r onchain-pack-airdrop-monthly-to-sheet.zip main.py requirements.txt bigquery.json
     EOT
   }
 
   triggers = {
-    main_content_hash         = filesha256("./onchain-pack-airdrop-monthly-to-sheet/main.py")
-    requirements_content_hash = filesha256("./onchain-pack-airdrop-monthly-to-sheet/requirements.txt")
-    json_content_hash         = filesha256("./onchain-pack-airdrop-monthly-to-sheet/bigquery.json")
+    main_content_hash         = filesha256("./cloud-functions/onchain-pack-airdrop-monthly-to-sheet/main.py")
+    requirements_content_hash = filesha256("./cloud-functions/onchain-pack-airdrop-monthly-to-sheet/requirements.txt")
+    json_content_hash         = filesha256("./cloud-functions/onchain-pack-airdrop-monthly-to-sheet/bigquery.json")
   }
 }
 
@@ -297,7 +297,7 @@ resource "google_storage_bucket_object" "onchain_pack_airdrop_monthly_sheet_clou
 
   name   = "source/onchain-pack-airdrop-monthly-to-sheet.zip"
   bucket = google_storage_bucket.cloud_function_storage.name
-  source = "./onchain-pack-airdrop-monthly-to-sheet/onchain-pack-airdrop-monthly-to-sheet.zip"
+  source = "./cloud-functions/onchain-pack-airdrop-monthly-to-sheet/onchain-pack-airdrop-monthly-to-sheet.zip"
 }
 
 ## cloud_function

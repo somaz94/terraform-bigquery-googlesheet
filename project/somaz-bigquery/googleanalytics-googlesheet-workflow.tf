@@ -4,15 +4,15 @@ resource "null_resource" "analytics_sheet_new_web_visitors_zip_cloudfunction" {
 
   provisioner "local-exec" {
     command = <<EOT
-      cd ./analytics-to-sheet-new-web-visitors
+      cd ./cloud-functions/analytics-to-sheet-new-web-visitors
       zip -r analytics-to-sheet-new-web-visitors.zip main.py requirements.txt bigquery.json
     EOT
   }
 
   triggers = {
-    main_content_hash         = filesha256("./analytics-to-sheet-new-web-visitors/main.py")
-    requirements_content_hash = filesha256("./analytics-to-sheet-new-web-visitors/requirements.txt")
-    json_content_hash         = filesha256("./analytics-to-sheet-new-web-visitors/bigquery.json")
+    main_content_hash         = filesha256("./cloud-functions/analytics-to-sheet-new-web-visitors/main.py")
+    requirements_content_hash = filesha256("./cloud-functions/analytics-to-sheet-new-web-visitors/requirements.txt")
+    json_content_hash         = filesha256("./cloud-functions/analytics-to-sheet-new-web-visitors/bigquery.json")
   }
 }
 
@@ -21,7 +21,7 @@ resource "google_storage_bucket_object" "analytics_sheet_new_web_visitors_cloudf
 
   name   = "source/analytics-to-sheet-new-web-visitors.zip"
   bucket = google_storage_bucket.cloud_function_storage.name
-  source = "./analytics-to-sheet-new-web-visitors/analytics-to-sheet-new-web-visitors.zip"
+  source = "./cloud-functions/analytics-to-sheet-new-web-visitors/analytics-to-sheet-new-web-visitors.zip"
 }
 
 
@@ -76,15 +76,15 @@ resource "null_resource" "analytics_sheet_new_web_visitors_country_zip_cloudfunc
 
   provisioner "local-exec" {
     command = <<EOT
-      cd ./analytics-to-sheet-new-web-visitors-country
+      cd ./cloud-functions/analytics-to-sheet-new-web-visitors-country
       zip -r analytics-to-sheet-new-web-visitors-country.zip main.py requirements.txt bigquery.json
     EOT
   }
 
   triggers = {
-    main_content_hash         = filesha256("./analytics-to-sheet-new-web-visitors-country/main.py")
-    requirements_content_hash = filesha256("./analytics-to-sheet-new-web-visitors-country/requirements.txt")
-    json_content_hash         = filesha256("./analytics-to-sheet-new-web-visitors-country/bigquery.json")
+    main_content_hash         = filesha256("./cloud-functions/analytics-to-sheet-new-web-visitors-country/main.py")
+    requirements_content_hash = filesha256("./cloud-functions/analytics-to-sheet-new-web-visitors-country/requirements.txt")
+    json_content_hash         = filesha256("./cloud-functions/analytics-to-sheet-new-web-visitors-country/bigquery.json")
   }
 }
 
@@ -93,7 +93,7 @@ resource "google_storage_bucket_object" "analytics_sheet_new_web_visitors_countr
 
   name   = "source/analytics-to-sheet-new-web-visitors-country.zip"
   bucket = google_storage_bucket.cloud_function_storage.name
-  source = "./analytics-to-sheet-new-web-visitors-country/analytics-to-sheet-new-web-visitors-country.zip"
+  source = "./cloud-functions/analytics-to-sheet-new-web-visitors-country/analytics-to-sheet-new-web-visitors-country.zip"
 }
 
 

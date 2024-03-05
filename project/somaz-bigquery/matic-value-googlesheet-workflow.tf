@@ -4,15 +4,15 @@ resource "null_resource" "matic_value_sheet_zip_cloudfunction" {
 
   provisioner "local-exec" {
     command = <<EOT
-      cd ./matic-value-to-sheet
+      cd ./cloud-functions/matic-value-to-sheet
       zip -r matic-value-to-sheet.zip main.py requirements.txt bigquery.json
     EOT
   }
 
   triggers = {
-    main_content_hash         = filesha256("./matic-value-to-sheet/main.py")
-    requirements_content_hash = filesha256("./matic-value-to-sheet/requirements.txt")
-    json_content_hash         = filesha256("./matic-value-to-sheet/bigquery.json")
+    main_content_hash         = filesha256("./cloud-functions/matic-value-to-sheet/main.py")
+    requirements_content_hash = filesha256("./cloud-functions/matic-value-to-sheet/requirements.txt")
+    json_content_hash         = filesha256("./cloud-functions/matic-value-to-sheet/bigquery.json")
   }
 }
 
@@ -21,7 +21,7 @@ resource "google_storage_bucket_object" "matic_value_sheet_cloudfunction_archive
 
   name   = "source/matic-value-to-sheet.zip"
   bucket = google_storage_bucket.cloud_function_storage.name
-  source = "./matic-value-to-sheet/matic-value-to-sheet.zip"
+  source = "./cloud-functions/matic-value-to-sheet/matic-value-to-sheet.zip"
 }
 
 

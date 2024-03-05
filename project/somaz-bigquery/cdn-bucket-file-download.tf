@@ -14,14 +14,14 @@ resource "null_resource" "somaz_cdn_zip_cloud_function" {
 
   provisioner "local-exec" {
     command = <<EOT
-      cd ./somaz-cdn-bucket-file-download
+      cd ./cloud-functions/somaz-cdn-bucket-file-download
       zip -r somaz-cdn-log-function.zip main.py requirements.txt
     EOT
   }
 
   triggers = {
-    main_py_content_hash          = filesha256("./somaz-cdn-bucket-file-download/main.py")
-    requirements_txt_content_hash = filesha256("./somaz-cdn-bucket-file-download/requirements.txt")
+    main_py_content_hash          = filesha256("./cloud-functions/somaz-cdn-bucket-file-download/main.py")
+    requirements_txt_content_hash = filesha256("./cloud-functions/somaz-cdn-bucket-file-download/requirements.txt")
   }
 }
 
@@ -30,7 +30,7 @@ resource "google_storage_bucket_object" "somaz_cdn_cloud_function_archive" {
 
   name   = "source/somaz-cdn-log-function.zip"
   bucket = google_storage_bucket.somaz_cdn_result_log_bucket.name
-  source = "./somaz-cdn-bucket-file-download/prod-dsp-cdn-log-function.zip"
+  source = "./cloud-functions/somaz-cdn-bucket-file-download/prod-dsp-cdn-log-function.zip"
 }
 
 resource "google_cloudfunctions_function" "somaz_cdn_log_processor_function" {

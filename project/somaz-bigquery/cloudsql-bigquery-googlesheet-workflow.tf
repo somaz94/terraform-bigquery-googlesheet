@@ -4,15 +4,15 @@ resource "null_resource" "bigquery_sheet_zip_retention_cloudfunction" {
 
   provisioner "local-exec" {
     command = <<EOT
-      cd ./bigquery-to-sheet-retention
+      cd ./cloud-functions/bigquery-to-sheet-retention
       zip -r bigquery-to-sheet-retention.zip main.py requirements.txt bigquery-dsp.json
     EOT
   }
 
   triggers = {
-    main_content_hash         = filesha256("./bigquery-to-sheet-retention/main.py")
-    requirements_content_hash = filesha256("./bigquery-to-sheet-retention/requirements.txt")
-    json_content_hash         = filesha256("./bigquery-to-sheet-retention/bigquery-dsp.json")
+    main_content_hash         = filesha256("./cloud-functions/bigquery-to-sheet-retention/main.py")
+    requirements_content_hash = filesha256("./cloud-functions/bigquery-to-sheet-retention/requirements.txt")
+    json_content_hash         = filesha256("./cloud-functions/bigquery-to-sheet-retention/bigquery-dsp.json")
   }
 }
 
@@ -21,7 +21,7 @@ resource "google_storage_bucket_object" "bigquery_sheet_retention_cloudfunction_
 
   name   = "source/bigquery-to-sheet-retention.zip"
   bucket = google_storage_bucket.cloud_function_storage.name
-  source = "./bigquery-to-sheet-retention/bigquery-to-sheet-retention.zip"
+  source = "./cloud-functions/bigquery-to-sheet-retention/bigquery-to-sheet-retention.zip"
 }
 
 
@@ -75,15 +75,15 @@ resource "null_resource" "bigquery_sheet_zip_wallet_cloudfunction" {
 
   provisioner "local-exec" {
     command = <<EOT
-      cd ./bigquery-to-sheet-wallet
+      cd ./cloud-functions/bigquery-to-sheet-wallet
       zip -r bigquery-to-sheet-wallet.zip main.py requirements.txt bigquery-luxon.json
     EOT
   }
 
   triggers = {
-    main_content_hash         = filesha256("./bigquery-to-sheet-wallet/main.py")
-    requirements_content_hash = filesha256("./bigquery-to-sheet-wallet/requirements.txt")
-    json_content_hash         = filesha256("./bigquery-to-sheet-wallet/bigquery-luxon.json")
+    main_content_hash         = filesha256("./cloud-functions/bigquery-to-sheet-wallet/main.py")
+    requirements_content_hash = filesha256("./cloud-functions/bigquery-to-sheet-wallet/requirements.txt")
+    json_content_hash         = filesha256("./cloud-functions/bigquery-to-sheet-wallet/bigquery-luxon.json")
   }
 }
 
@@ -92,7 +92,7 @@ resource "google_storage_bucket_object" "bigquery_sheet_wallet_cloudfunction_arc
 
   name   = "source/bigquery-to-sheet-wallet.zip"
   bucket = google_storage_bucket.cloud_function_storage.name
-  source = "./bigquery-to-sheet-wallet/bigquery-to-sheet-wallet.zip"
+  source = "./cloud-functions/bigquery-to-sheet-wallet/bigquery-to-sheet-wallet.zip"
 }
 
 

@@ -4,15 +4,15 @@ resource "null_resource" "onchain_agent_common_sheet_zip_cloud_function" {
 
   provisioner "local-exec" {
     command = <<EOT
-      cd ./onchain-agent-common-to-sheet
+      cd ./cloud-functions/onchain-agent-common-to-sheet
       zip -r onchain-agent-common-to-sheet.zip main.py requirements.txt bigquery.json
     EOT
   }
 
   triggers = {
-    main_content_hash         = filesha256("./onchain-agent-common-to-sheet/main.py")
-    requirements_content_hash = filesha256("./onchain-agent-common-to-sheet/requirements.txt")
-    json_content_hash         = filesha256("./onchain-agent-common-to-sheet/bigquery.json")
+    main_content_hash         = filesha256("./cloud-functions/onchain-agent-common-to-sheet/main.py")
+    requirements_content_hash = filesha256("./cloud-functions/onchain-agent-common-to-sheet/requirements.txt")
+    json_content_hash         = filesha256("./cloud-functions/onchain-agent-common-to-sheet/bigquery.json")
   }
 }
 
@@ -21,7 +21,7 @@ resource "google_storage_bucket_object" "onchain_agent_common_sheet_cloudfunctio
 
   name   = "source/onchain-agent-common-to-sheet.zip"
   bucket = google_storage_bucket.cloud_function_storage.name
-  source = "./onchain-agent-common-to-sheet/onchain-agent-common-to-sheet.zip"
+  source = "./cloud-functions/onchain-agent-common-to-sheet/onchain-agent-common-to-sheet.zip"
 }
 
 ## cloud_function
@@ -73,15 +73,15 @@ resource "null_resource" "onchain_agent_uncommon_sheet_zip_cloud_function" {
 
   provisioner "local-exec" {
     command = <<EOT
-      cd ./onchain-agent-uncommon-to-sheet
+      cd ./cloud-functions/onchain-agent-uncommon-to-sheet
       zip -r onchain-agent-uncommon-to-sheet.zip main.py requirements.txt bigquery.json
     EOT
   }
 
   triggers = {
-    main_content_hash         = filesha256("./onchain-agent-uncommon-to-sheet/main.py")
-    requirements_content_hash = filesha256("./onchain-agent-uncommon-to-sheet/requirements.txt")
-    json_content_hash         = filesha256("./onchain-agent-uncommon-to-sheet/bigquery.json")
+    main_content_hash         = filesha256("./cloud-functions/onchain-agent-uncommon-to-sheet/main.py")
+    requirements_content_hash = filesha256("./cloud-functions/onchain-agent-uncommon-to-sheet/requirements.txt")
+    json_content_hash         = filesha256("./cloud-functions/onchain-agent-uncommon-to-sheet/bigquery.json")
   }
 }
 
@@ -90,7 +90,7 @@ resource "google_storage_bucket_object" "onchain_agent_uncommon_sheet_cloudfunct
 
   name   = "source/onchain-agent-uncommon-to-sheet.zip"
   bucket = google_storage_bucket.cloud_function_storage.name
-  source = "./onchain-agent-uncommon-to-sheet/onchain-agent-uncommon-to-sheet.zip"
+  source = "./cloud-functions/onchain-agent-uncommon-to-sheet/onchain-agent-uncommon-to-sheet.zip"
 }
 
 ## cloud_function
@@ -142,15 +142,15 @@ resource "null_resource" "onchain_agent_rare_sheet_zip_cloud_function" {
 
   provisioner "local-exec" {
     command = <<EOT
-      cd ./onchain-agent-rare-to-sheet
+      cd ./cloud-functions/onchain-agent-rare-to-sheet
       zip -r onchain-agent-rare-to-sheet.zip main.py requirements.txt bigquery.json
     EOT
   }
 
   triggers = {
-    main_content_hash         = filesha256("./onchain-agent-rare-to-sheet/main.py")
-    requirements_content_hash = filesha256("./onchain-agent-rare-to-sheet/requirements.txt")
-    json_content_hash         = filesha256("./onchain-agent-rare-to-sheet/bigquery.json")
+    main_content_hash         = filesha256("./cloud-functions/onchain-agent-rare-to-sheet/main.py")
+    requirements_content_hash = filesha256("./cloud-functions/onchain-agent-rare-to-sheet/requirements.txt")
+    json_content_hash         = filesha256("./cloud-functions/onchain-agent-rare-to-sheet/bigquery.json")
   }
 }
 
@@ -159,7 +159,7 @@ resource "google_storage_bucket_object" "onchain_agent_rare_sheet_cloudfunction_
 
   name   = "source/onchain-agent-rare-to-sheet.zip"
   bucket = google_storage_bucket.cloud_function_storage.name
-  source = "./onchain-agent-rare-to-sheet/onchain-agent-rare-to-sheet.zip"
+  source = "./cloud-functions/onchain-agent-rare-to-sheet/onchain-agent-rare-to-sheet.zip"
 }
 
 ## cloud_function
@@ -211,15 +211,15 @@ resource "null_resource" "onchain_agent_epic_sheet_zip_cloud_function" {
 
   provisioner "local-exec" {
     command = <<EOT
-      cd ./onchain-agent-epic-to-sheet
+      cd ./cloud-functions/onchain-agent-epic-to-sheet
       zip -r onchain-agent-epic-to-sheet.zip main.py requirements.txt bigquery.json
     EOT
   }
 
   triggers = {
-    main_content_hash         = filesha256("./onchain-agent-epic-to-sheet/main.py")
-    requirements_content_hash = filesha256("./onchain-agent-epic-to-sheet/requirements.txt")
-    json_content_hash         = filesha256("./analytics-to-sheet-new-web-visitors-country/bigquery.json")
+    main_content_hash         = filesha256("./cloud-functions/onchain-agent-epic-to-sheet/main.py")
+    requirements_content_hash = filesha256("./cloud-functions/onchain-agent-epic-to-sheet/requirements.txt")
+    json_content_hash         = filesha256("./cloud-functions/onchain-agent-epic-to-sheet/bigquery.json")
   }
 }
 
@@ -280,15 +280,15 @@ resource "null_resource" "onchain_agent_legend_sheet_zip_cloud_function" {
 
   provisioner "local-exec" {
     command = <<EOT
-      cd ./onchain-agent-legend-to-sheet
+      cd ./cloud-functions/onchain-agent-legend-to-sheet
       zip -r onchain-agent-legend-to-sheet.zip main.py requirements.txt bigquery.json
     EOT
   }
 
   triggers = {
-    main_content_hash         = filesha256("./onchain-agent-legend-to-sheet/main.py")
-    requirements_content_hash = filesha256("./onchain-agent-legend-to-sheet/requirements.txt")
-    json_content_hash         = filesha256("./onchain-agent-legend-to-sheet/bigquery.json")
+    main_content_hash         = filesha256("./cloud-functions/onchain-agent-legend-to-sheet/main.py")
+    requirements_content_hash = filesha256("./cloud-functions/onchain-agent-legend-to-sheet/requirements.txt")
+    json_content_hash         = filesha256("./cloud-functions/onchain-agent-legend-to-sheet/bigquery.json")
   }
 }
 
@@ -297,7 +297,7 @@ resource "google_storage_bucket_object" "onchain_agent_legend_sheet_cloudfunctio
 
   name   = "source/onchain-agent-legend-to-sheet.zip"
   bucket = google_storage_bucket.cloud_function_storage.name
-  source = "./onchain-agent-legend-to-sheet/onchain-agent-legend-to-sheet.zip"
+  source = "./cloud-functions/onchain-agent-legend-to-sheet/onchain-agent-legend-to-sheet.zip"
 }
 
 ## cloud_function
@@ -349,15 +349,15 @@ resource "null_resource" "onchain_pack_basic_epic1_sheet_zip_cloud_function" {
 
   provisioner "local-exec" {
     command = <<EOT
-      cd ./onchain-pack-basic-epic1-to-sheet
+      cd ./cloud-functions/onchain-pack-basic-epic1-to-sheet
       zip -r onchain-pack-basic-epic1-to-sheet.zip main.py requirements.txt bigquery.json
     EOT
   }
 
   triggers = {
-    main_content_hash         = filesha256("./onchain-pack-basic-epic1-to-sheet/main.py")
-    requirements_content_hash = filesha256("./onchain-pack-basic-epic1-to-sheet/requirements.txt")
-    json_content_hash         = filesha256("./onchain-pack-basic-epic1-to-sheet/bigquery.json")
+    main_content_hash         = filesha256("./cloud-functions/onchain-pack-basic-epic1-to-sheet/main.py")
+    requirements_content_hash = filesha256("./cloud-functions/onchain-pack-basic-epic1-to-sheet/requirements.txt")
+    json_content_hash         = filesha256("./cloud-functions/onchain-pack-basic-epic1-to-sheet/bigquery.json")
   }
 }
 
@@ -366,7 +366,7 @@ resource "google_storage_bucket_object" "onchain_pack_basic_epic1_sheet_cloudfun
 
   name   = "source/onchain-pack-basic-epic1-to-sheet.zip"
   bucket = google_storage_bucket.cloud_function_storage.name
-  source = "./onchain-pack-basic-epic1-to-sheet/onchain-pack-basic-epic1-to-sheet.zip"
+  source = "./cloud-functions/onchain-pack-basic-epic1-to-sheet/onchain-pack-basic-epic1-to-sheet.zip"
 }
 
 ## cloud_function
@@ -418,15 +418,15 @@ resource "null_resource" "onchain_materials_dp_chip_sheet_zip_cloud_function" {
 
   provisioner "local-exec" {
     command = <<EOT
-      cd ./onchain-materials-dp-chip-to-sheet
+      cd ./cloud-functions/onchain-materials-dp-chip-to-sheet
       zip -r onchain-materials-dp-chip-to-sheet.zip main.py requirements.txt bigquery.json
     EOT
   }
 
   triggers = {
-    main_content_hash         = filesha256("./onchain-materials-dp-chip-to-sheet/main.py")
-    requirements_content_hash = filesha256("./onchain-materials-dp-chip-to-sheet/requirements.txt")
-    json_content_hash         = filesha256("./onchain-materials-dp-chip-to-sheet/bigquery.json")
+    main_content_hash         = filesha256("./cloud-functions/onchain-materials-dp-chip-to-sheet/main.py")
+    requirements_content_hash = filesha256("./cloud-functions/onchain-materials-dp-chip-to-sheet/requirements.txt")
+    json_content_hash         = filesha256("./cloud-functions/onchain-materials-dp-chip-to-sheet/bigquery.json")
   }
 }
 
@@ -487,15 +487,15 @@ resource "null_resource" "onchain_materials_skill_exchange_ticket_sheet_zip_clou
 
   provisioner "local-exec" {
     command = <<EOT
-      cd ./onchain-materials-skill-exchange-ticket-to-sheet
+      cd ./cloud-functions/onchain-materials-skill-exchange-ticket-to-sheet
       zip -r onchain-materials-skill-exchange-ticket-to-sheet.zip main.py requirements.txt bigquery.json
     EOT
   }
 
   triggers = {
-    main_content_hash         = filesha256("./onchain-materials-skill-exchange-ticket-to-sheet/main.py")
-    requirements_content_hash = filesha256("./onchain-materials-skill-exchange-ticket-to-sheet/requirements.txt")
-    json_content_hash         = filesha256("./onchain-materials-skill-exchange-ticket-to-sheet/bigquery.json")
+    main_content_hash         = filesha256("./cloud-functions/onchain-materials-skill-exchange-ticket-to-sheet/main.py")
+    requirements_content_hash = filesha256("./cloud-functions/onchain-materials-skill-exchange-ticket-to-sheet/requirements.txt")
+    json_content_hash         = filesha256("./cloud-functions/onchain-materials-skill-exchange-ticket-to-sheet/bigquery.json")
   }
 }
 
@@ -504,7 +504,7 @@ resource "google_storage_bucket_object" "onchain_materials_skill_exchange_ticket
 
   name   = "source/onchain-materials-skill-exchange-ticket-to-sheet.zip"
   bucket = google_storage_bucket.cloud_function_storage.name
-  source = "./onchain-materials-skill-exchange-ticket-to-sheet/onchain-materials-skill-exchange-ticket-to-sheet.zip"
+  source = "./cloud-functions/onchain-materials-skill-exchange-ticket-to-sheet/onchain-materials-skill-exchange-ticket-to-sheet.zip"
 }
 
 ## cloud_function
@@ -556,15 +556,15 @@ resource "null_resource" "onchain_quest2_daily_global_sheet_zip_cloud_function" 
 
   provisioner "local-exec" {
     command = <<EOT
-      cd ./onchain-quest2-daily-global-to-sheet
+      cd ./cloud-functions/onchain-quest2-daily-global-to-sheet
       zip -r onchain-quest2-daily-global-to-sheet.zip main.py requirements.txt bigquery.json
     EOT
   }
 
   triggers = {
-    main_content_hash         = filesha256("./onchain-quest2-daily-global-to-sheet/main.py")
-    requirements_content_hash = filesha256("./onchain-quest2-daily-global-to-sheet/requirements.txt")
-    json_content_hash         = filesha256("./onchain-quest2-daily-global-to-sheet/bigquery.json")
+    main_content_hash         = filesha256("./cloud-functions/onchain-quest2-daily-global-to-sheet/main.py")
+    requirements_content_hash = filesha256("./cloud-functions/onchain-quest2-daily-global-to-sheet/requirements.txt")
+    json_content_hash         = filesha256("./cloud-functions/onchain-quest2-daily-global-to-sheet/bigquery.json")
   }
 }
 
@@ -573,7 +573,7 @@ resource "google_storage_bucket_object" "onchain_quest2_daily_global_sheet_cloud
 
   name   = "source/onchain-quest2-daily-global-to-sheet.zip"
   bucket = google_storage_bucket.cloud_function_storage.name
-  source = "./onchain-quest2-daily-global-to-sheet/onchain-quest2-daily-global-to-sheet.zip"
+  source = "./cloud-functions/onchain-quest2-daily-global-to-sheet/onchain-quest2-daily-global-to-sheet.zip"
 }
 
 ## cloud_function

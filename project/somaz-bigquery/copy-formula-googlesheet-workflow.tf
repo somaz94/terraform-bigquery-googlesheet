@@ -4,15 +4,15 @@ resource "null_resource" "copy_formula_sheet_zip_cloudfunction" {
 
   provisioner "local-exec" {
     command = <<EOT
-      cd ./copy-formula-to-sheet
+      cd ./cloud-functions/copy-formula-to-sheet
       zip -r copy-formula-to-sheet.zip main.py requirements.txt bigquery.json
     EOT
   }
 
   triggers = {
-    main_content_hash         = filesha256("./copy-formula-to-sheet/main.py")
-    requirements_content_hash = filesha256("./copy-formula-to-sheet/requirements.txt")
-    json_content_hash         = filesha256("./copy-formula-to-sheet/bigquery.json")
+    main_content_hash         = filesha256("./cloud-functions/copy-formula-to-sheet/main.py")
+    requirements_content_hash = filesha256("./cloud-functions/copy-formula-to-sheet/requirements.txt")
+    json_content_hash         = filesha256("./cloud-functions/copy-formula-to-sheet/bigquery.json")
   }
 }
 
@@ -21,7 +21,7 @@ resource "google_storage_bucket_object" "copy_formula_sheet_cloudfunction_archiv
 
   name   = "source/copy-formula-to-sheet.zip"
   bucket = google_storage_bucket.cloud_function_storage.name
-  source = "./copy-formula-to-sheet/copy-formula-to-sheet.zip"
+  source = "./cloud-functions/copy-formula-to-sheet/copy-formula-to-sheet.zip"
 }
 
 
@@ -75,15 +75,15 @@ resource "null_resource" "copy_formula_retention_sheet_zip_cloudfunction" {
 
   provisioner "local-exec" {
     command = <<EOT
-      cd ./copy-formula-retention-to-sheet
+      cd ./cloud-functions/copy-formula-retention-to-sheet
       zip -r copy-formula-retention-to-sheet.zip main.py requirements.txt bigquery.json
     EOT
   }
 
   triggers = {
-    main_content_hash         = filesha256("./copy-formula-retention-to-sheet/main.py")
-    requirements_content_hash = filesha256("./copy-formula-retention-to-sheet/requirements.txt")
-    json_content_hash         = filesha256("./copy-formula-retention-to-sheet/bigquery.json")
+    main_content_hash         = filesha256("./cloud-functions/copy-formula-retention-to-sheet/main.py")
+    requirements_content_hash = filesha256("./cloud-functions/copy-formula-retention-to-sheet/requirements.txt")
+    json_content_hash         = filesha256("./cloud-functions/copy-formula-retention-to-sheet/bigquery.json")
   }
 }
 
@@ -92,7 +92,7 @@ resource "google_storage_bucket_object" "copy_formula_retention_sheet_cloudfunct
 
   name   = "source/copy-formula-retention-to-sheet.zip"
   bucket = google_storage_bucket.cloud_function_storage.name
-  source = "./copy-formula-retention-to-sheet/copy-formula-retention-to-sheet.zip"
+  source = "./cloud-functions/copy-formula-retention-to-sheet/copy-formula-retention-to-sheet.zip"
 }
 
 
@@ -146,15 +146,15 @@ resource "null_resource" "copy_formula_monthly_sheet_zip_cloudfunction" {
 
   provisioner "local-exec" {
     command = <<EOT
-      cd ./copy-formula-monthly-to-sheet
+      cd ./cloud-functions/copy-formula-monthly-to-sheet
       zip -r copy-formula-monthly-to-sheet.zip main.py requirements.txt bigquery.json
     EOT
   }
 
   triggers = {
-    main_content_hash         = filesha256("./copy-formula-monthly-to-sheet/main.py")
-    requirements_content_hash = filesha256("./copy-formula-monthly-to-sheet/requirements.txt")
-    json_content_hash         = filesha256("./copy-formula-monthly-to-sheet/bigquery.json")
+    main_content_hash         = filesha256("./cloud-functions/copy-formula-monthly-to-sheet/main.py")
+    requirements_content_hash = filesha256("./cloud-functions/copy-formula-monthly-to-sheet/requirements.txt")
+    json_content_hash         = filesha256("./cloud-functions/copy-formula-monthly-to-sheet/bigquery.json")
   }
 }
 
@@ -163,7 +163,7 @@ resource "google_storage_bucket_object" "copy_formula_monthly_sheet_cloudfunctio
 
   name   = "source/copy-formula-monthly-to-sheet.zip"
   bucket = google_storage_bucket.cloud_function_storage.name
-  source = "./copy-formula-monthly-to-sheet/copy-formula-monthly-to-sheet.zip"
+  source = "./cloud-functions/copy-formula-monthly-to-sheet/copy-formula-monthly-to-sheet.zip"
 }
 
 

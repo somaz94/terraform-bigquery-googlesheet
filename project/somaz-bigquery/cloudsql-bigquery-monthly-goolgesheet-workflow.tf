@@ -4,15 +4,15 @@ resource "null_resource" "bigquery_sheet_zip_tier_badge_monthly_cloudfunction" {
 
   provisioner "local-exec" {
     command = <<EOT
-      cd ./bigquery-to-sheet-tier-badge-monthly
+      cd ./cloud-functions/bigquery-to-sheet-tier-badge-monthly
       zip -r bigquery-to-sheet-tier-badge-monthly.zip main.py requirements.txt bigquery-luxon.json
     EOT
   }
 
   triggers = {
-    main_content_hash         = filesha256("./bigquery-to-sheet-tier-badge-monthly/main.py")
-    requirements_content_hash = filesha256("./bigquery-to-sheet-tier-badge-monthly/requirements.txt")
-    json_content_hash         = filesha256("./bigquery-to-sheet-tier-badge-monthly/bigquery-luxon.json")
+    main_content_hash         = filesha256("./cloud-functions/bigquery-to-sheet-tier-badge-monthly/main.py")
+    requirements_content_hash = filesha256("./cloud-functions/bigquery-to-sheet-tier-badge-monthly/requirements.txt")
+    json_content_hash         = filesha256("./cloud-functions/bigquery-to-sheet-tier-badge-monthly/bigquery-luxon.json")
   }
 }
 
@@ -21,7 +21,7 @@ resource "google_storage_bucket_object" "bigquery_sheet_tier_badge_monthly_cloud
 
   name   = "source/bigquery-to-sheet-tier-badge-monthly.zip"
   bucket = google_storage_bucket.cloud_function_storage.name
-  source = "./bigquery-to-sheet-tier-badge-monthly/bigquery-to-sheet-tier-badge-monthly.zip"
+  source = "./cloud-functions/bigquery-to-sheet-tier-badge-monthly/bigquery-to-sheet-tier-badge-monthly.zip"
 }
 
 

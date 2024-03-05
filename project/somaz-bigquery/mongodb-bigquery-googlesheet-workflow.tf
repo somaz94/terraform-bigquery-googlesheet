@@ -44,14 +44,14 @@ resource "null_resource" "mongodb_bigquery_zip_cloud_function" {
 
   provisioner "local-exec" {
     command = <<EOT
-      cd ./mongodb-to-bigquery
+      cd ./cloud-functions/mongodb-to-bigquery
       zip -r mongodb-to-bigquery.zip main.py requirements.txt
     EOT
   }
 
   triggers = {
-    main_content_hash         = filesha256("./mongodb-to-bigquery/main.py")
-    requirements_content_hash = filesha256("./mongodb-to-bigquery/requirements.txt")
+    main_content_hash         = filesha256("./cloud-functions/mongodb-to-bigquery/main.py")
+    requirements_content_hash = filesha256("./cloud-functions/mongodb-to-bigquery/requirements.txt")
   }
 }
 
@@ -60,7 +60,7 @@ resource "google_storage_bucket_object" "mongodb_bigquery_cloudfunction_archive"
 
   name   = "source/mongodb-to-bigquery.zip"
   bucket = google_storage_bucket.cloud_function_storage.name
-  source = "./mongodb-to-bigquery/mongodb-to-bigquery.zip"
+  source = "./cloud-functions/mongodb-to-bigquery/mongodb-to-bigquery.zip"
 }
 
 ## cloud_function
@@ -115,14 +115,14 @@ resource "null_resource" "bigquery_deduplication_zip_cloud_function" {
 
   provisioner "local-exec" {
     command = <<EOT
-      cd ./bigquery-deduplication
+      cd ./cloud-functions/bigquery-deduplication
       zip -r bigquery-deduplication.zip main.py requirements.txt
     EOT
   }
 
   triggers = {
-    main_content_hash         = filesha256("./bigquery-deduplication/main.py")
-    requirements_content_hash = filesha256("./bigquery-deduplication/requirements.txt")
+    main_content_hash         = filesha256("./cloud-functions/bigquery-deduplication/main.py")
+    requirements_content_hash = filesha256("./cloud-functions/bigquery-deduplication/requirements.txt")
   }
 }
 
@@ -131,7 +131,7 @@ resource "google_storage_bucket_object" "bigquery_deduplication_cloudfunction_ar
 
   name   = "source/bigquery-deduplication.zip"
   bucket = google_storage_bucket.cloud_function_storage.name
-  source = "./bigquery-deduplication/bigquery-deduplication.zip"
+  source = "./cloud-functions/bigquery-deduplication/bigquery-deduplication.zip"
 }
 
 # Deduplication Cloud Function Resources
@@ -184,15 +184,15 @@ resource "null_resource" "bigquery_sheet_zip_simple_cloudfunction" {
 
   provisioner "local-exec" {
     command = <<EOT
-      cd ./bigquery-to-sheet-simple
+      cd ./cloud-functions/bigquery-to-sheet-simple
       zip -r bigquery-to-sheet-simple.zip main.py requirements.txt bigquery.json
     EOT
   }
 
   triggers = {
-    main_content_hash         = filesha256("./bigquery-to-sheet-simple/main.py")
-    requirements_content_hash = filesha256("./bigquery-to-sheet-simple/requirements.txt")
-    json_content_hash         = filesha256("./bigquery-to-sheet-simple/bigquery.json")
+    main_content_hash         = filesha256("./cloud-functions/bigquery-to-sheet-simple/main.py")
+    requirements_content_hash = filesha256("./cloud-functions/bigquery-to-sheet-simple/requirements.txt")
+    json_content_hash         = filesha256("./cloud-functions/bigquery-to-sheet-simple/bigquery.json")
   }
 }
 
@@ -201,7 +201,7 @@ resource "google_storage_bucket_object" "bigquery_sheet_simple_cloudfunction_arc
 
   name   = "source/bigquery-to-sheet-simple.zip"
   bucket = google_storage_bucket.cloud_function_storage.name
-  source = "./bigquery-to-sheet-simple/bigquery-to-sheet-simple.zip"
+  source = "./cloud-functions/bigquery-to-sheet-simple/bigquery-to-sheet-simple.zip"
 }
 
 
@@ -256,15 +256,15 @@ resource "null_resource" "bigquery_sheet_zip_multiple_cloudfunction" {
 
   provisioner "local-exec" {
     command = <<EOT
-      cd ./bigquery-to-sheet-multiple
+      cd ./cloud-functions/bigquery-to-sheet-multiple
       zip -r bigquery-to-sheet-multiple.zip main.py requirements.txt bigquery.json
     EOT
   }
 
   triggers = {
-    main_content_hash         = filesha256("./bigquery-to-sheet-multiple/main.py")
-    requirements_content_hash = filesha256("./bigquery-to-sheet-multiple/requirements.txt")
-    json_content_hash         = filesha256("./bigquery-to-sheet-simple/bigquery.json")
+    main_content_hash         = filesha256("./cloud-functions/bigquery-to-sheet-multiple/main.py")
+    requirements_content_hash = filesha256("./cloud-functions/bigquery-to-sheet-multiple/requirements.txt")
+    json_content_hash         = filesha256("./cloud-functions/bigquery-to-sheet-simple/bigquery.json")
   }
 }
 
@@ -273,7 +273,7 @@ resource "google_storage_bucket_object" "bigquery_sheet_multiple_cloudfunction_a
 
   name   = "source/bigquery-to-sheet-multiple.zip"
   bucket = google_storage_bucket.cloud_function_storage.name
-  source = "./bigquery-to-sheet-multiple/bigquery-to-sheet-multiple.zip"
+  source = "./cloud-functions/bigquery-to-sheet-multiple/bigquery-to-sheet-multiple.zip"
 }
 
 
