@@ -6,7 +6,8 @@ from google.cloud import logging, storage
 import os
 
 def retrieve_and_save_logs(request):
-    yesterday = (datetime.utcnow() - timedelta(days=1)).strftime('%Y-%m-%d')
+    # yesterday = (datetime.utcnow() - timedelta(days=1)).strftime('%Y-%m-%d')
+    yesterday = (datetime.now(timezone.utc) - timedelta(days=1)).strftime('%Y-%m-%d')
     start_date = f"{yesterday}T00:00:00Z"
     end_date = f"{yesterday}T23:59:59Z"
 
