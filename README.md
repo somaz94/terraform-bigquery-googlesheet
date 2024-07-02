@@ -5,7 +5,36 @@ This project integrates various data sources with Google Sheets and BigQuery usi
 <br/>
 
 ## Data Architecture
-![Data Automation Workflow](https://github.com/somaz94/terraform-bigquery-googlesheet/assets/112675579/bef53a70-e70b-4cdf-b5cf-732349c6998b)
+```mermaid
+graph TD
+    A[MongoDB] -->|Cloud Function: Dataflow Invocation| B[Dataflow: MongoDB Data Transfer]
+    B -->|Import to DataSet| I[BigQuery: DataSet]
+    I -->|Deduplication| P[Cloud Function: Deduplication]
+    P -->|Update DataSet| I
+    I -->|Direct to Sheets| K[Google Sheets]
+    C[CloudSQL] -->|Cloud Function: SQL Query| D[Direct to Sheets]
+    D --> K
+    E[Google Analytics] -->|API Data Fetch| F[Cloud Function: GA Query]
+    F --> K
+    G[Dune] -->|API Data Fetch| H[Cloud Function: Dune Query]
+    H --> K
+    L[Cloud Scheduler: Daily Data Transfer] -->|Trigger| A
+    L -->|Trigger| P
+    L -->|Schedule| D
+    L -->|Schedule| F
+    L -->|Schedule| H
+
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style B fill:#f9f,stroke:#333,stroke-width:2px
+    style C fill:#f9f,stroke:#333,stroke-width:2px
+    style E fill:#f9f,stroke:#333,stroke-width:2px
+    style G fill:#f9f,stroke:#333,stroke-width:2px
+    style I fill:#9cf,stroke:#333,stroke-width:2px
+    style K fill:#9cf,stroke:#333,stroke-width:2px
+    style L fill:#ff9,stroke:#333,stroke-width:4px
+    style P fill:#f66,stroke:#333,stroke-width:2px
+```
+- https://mermaid.live/edit
 
 <br/>
 
