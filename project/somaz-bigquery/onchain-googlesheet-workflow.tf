@@ -30,7 +30,7 @@ resource "google_cloudfunctions_function" "onchain_agent_common_sheet_function" 
 
   name                  = "onchain-agent-common-to-sheet"
   description           = "Function to onchain-agent-common-to-sheet"
-  runtime               = "python38"
+  runtime               = "python311"
   service_account_email = module.service_accounts_bigquery.email
   docker_registry       = "ARTIFACT_REGISTRY"
   timeout               = 540
@@ -99,7 +99,7 @@ resource "google_cloudfunctions_function" "onchain_agent_uncommon_sheet_function
 
   name                  = "onchain-agent-uncommon-to-sheet"
   description           = "Function to onchain-agent-uncommon-to-sheet"
-  runtime               = "python38"
+  runtime               = "python311"
   service_account_email = module.service_accounts_bigquery.email
   docker_registry       = "ARTIFACT_REGISTRY"
   timeout               = 540
@@ -168,7 +168,7 @@ resource "google_cloudfunctions_function" "onchain_agent_rare_sheet_function" {
 
   name                  = "onchain-agent-rare-to-sheet"
   description           = "Function to onchain-agent-rare-to-sheet"
-  runtime               = "python38"
+  runtime               = "python311"
   service_account_email = module.service_accounts_bigquery.email
   docker_registry       = "ARTIFACT_REGISTRY"
   timeout               = 540
@@ -237,7 +237,7 @@ resource "google_cloudfunctions_function" "onchain_agent_epic_sheet_function" {
 
   name                  = "onchain-agent-epic-to-sheet"
   description           = "Function to onchain-agent-epic-to-sheet"
-  runtime               = "python38"
+  runtime               = "python311"
   service_account_email = module.service_accounts_bigquery.email
   docker_registry       = "ARTIFACT_REGISTRY"
   timeout               = 540
@@ -306,7 +306,7 @@ resource "google_cloudfunctions_function" "onchain_agent_legend_sheet_function" 
 
   name                  = "onchain-agent-legend-to-sheet"
   description           = "Function to onchain-agent-legend-to-sheet"
-  runtime               = "python38"
+  runtime               = "python311"
   service_account_email = module.service_accounts_bigquery.email
   docker_registry       = "ARTIFACT_REGISTRY"
   timeout               = 540
@@ -375,7 +375,7 @@ resource "google_cloudfunctions_function" "onchain_pack_basic_epic1_sheet_functi
 
   name                  = "onchain-pack-basic-epic1-to-sheet"
   description           = "Function to onchain-pack-basic-epic1-to-sheet"
-  runtime               = "python38"
+  runtime               = "python311"
   service_account_email = module.service_accounts_bigquery.email
   docker_registry       = "ARTIFACT_REGISTRY"
   timeout               = 540
@@ -444,7 +444,7 @@ resource "google_cloudfunctions_function" "onchain_materials_dp_chip_sheet_funct
 
   name                  = "onchain-materials-dp-chip-to-sheet"
   description           = "Function to onchain-materials-dp-chip-to-sheet"
-  runtime               = "python38"
+  runtime               = "python311"
   service_account_email = module.service_accounts_bigquery.email
   docker_registry       = "ARTIFACT_REGISTRY"
   timeout               = 540
@@ -513,7 +513,7 @@ resource "google_cloudfunctions_function" "onchain_materials_skill_exchange_tick
 
   name                  = "onchain-materials-skill-exchange-ticket-to-sheet"
   description           = "Function to onchain-materials-skill-exchange-ticket-to-sheet"
-  runtime               = "python38"
+  runtime               = "python311"
   service_account_email = module.service_accounts_bigquery.email
   docker_registry       = "ARTIFACT_REGISTRY"
   timeout               = 540
@@ -582,7 +582,7 @@ resource "google_cloudfunctions_function" "onchain_quest2_daily_global_sheet_fun
 
   name                  = "onchain-quest2-daily-global-to-sheet"
   description           = "Function to onchain-quest2-daily-global-to-sheet"
-  runtime               = "python38"
+  runtime               = "python311"
   service_account_email = module.service_accounts_bigquery.email
   docker_registry       = "ARTIFACT_REGISTRY"
   timeout               = 540

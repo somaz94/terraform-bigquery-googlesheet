@@ -1,10 +1,11 @@
-# 🚀 Project Overview
+# Terraform BigQuery & Google Sheets Pipeline
 
 This project integrates various data sources with Google Sheets and BigQuery using Cloud Functions. It is structured to handle different data processing and transfer needs efficiently.
 
 <br/>
 
 ## Data Architecture
+
 ```mermaid
 graph TD
     A[MongoDB] -->|Cloud Function: Dataflow Invocation| B[Dataflow: MongoDB Data Transfer]
@@ -34,74 +35,153 @@ graph TD
     style L fill:#ff9,stroke:#333,stroke-width:4px
     style P fill:#f66,stroke:#333,stroke-width:2px
 ```
+
 - https://mermaid.live/edit
 
 <br/>
 
-## 📁 File Structure
+## Prerequisites
 
-- **📜 LICENSE**: Contains the MIT License details for this project.
-- **📄 README.md**: This file.
-- **🔑 key**
-  - `terraform.json` - Stores the Terraform configuration key.
-- **📦 modules**: Terraform modules for different infrastructure components.
-  - **🌐 gcs_buckets**
-    - Management of Google Cloud Storage buckets.
-  - **🗄️ mysql**
-    - Manages MySQL configurations, including read replicas.
-  - **🌍 network**
-    - Network configurations and related components like firewall rules and subnets.
-  - **🔐 service_accounts**
-    - Manages service accounts configurations.
-- **🔧 project/somaz-bigquery**: Contains Cloud Functions for data processing and transfer.
-  - **📈 analytics-to-sheet-new-web-visitors**
-    - Retrieves new web visitors count from Google Analytics and inputs it into Google Sheets.
-  - **🌏 analytics-to-sheet-new-web-visitors-country**
-    - Fetches country-wise new web visitor counts from Google Analytics for input into Google Sheets.
-  - **🔄 bigquery-deduplication**
-    - Removes duplicate data entries in BigQuery imported from MongoDB.
-  - **📊 bigquery-to-sheet-multiple/simple/retention/wallet**
-    - Functions for querying data from BigQuery and exporting to Google Sheets.
-  - **📋 copy-formula-to-sheet**
-    - Copies cells with formulas in Google Sheets.
-  - **📋 copy-formula-monthly-to-sheet**
-    - Copies cells with formulas in Google Sheets.
-  - **💱 matic-value-to-sheet**
-    - Fetches the daily price of Matic from [CoinGecko](https://www.coingecko.com/ko/%EC%BD%94%EC%9D%B8/polygon/historical_data#panel) and inputs it into Google Sheets.
-  - **🔄 mongodb-to-bigquery**
-    - Transforms data from MongoDB for export to BigQuery.
-  - **🌐 onchain-agent-common-to-sheet**
-    - Imports Onchain data from Dune API to Google Sheets.
-  - **🌐 onchain-agent-epic-to-sheet**
-    - Imports Onchain data from Dune API to Google Sheets.
-  - **🌐 onchain-agent-legend-to-sheet**
-    - Imports Onchain data from Dune API to Google Sheets.
-  - **🌐 onchain-agent-rare-to-sheet**
-    - Imports Onchain data from Dune API to Google Sheets.
-  - **🌐 onchain-agent-uncommon-to-sheet**
-    - Imports Onchain data from Dune API to Google Sheets.
-  - **🌐 onchain-materials-dp-chip-to-sheet**
-    - Imports Onchain data from Dune API to Google Sheets.
-  - **🌐 onchain-materials-skill-exchange-ticket-to-sheet**
-    - Imports Onchain data from Dune API to Google Sheets.
-  - **🌐 onchain-pack-basic-epic1-to-sheet**
-    - Imports Onchain data from Dune API to Google Sheets.
-  - **🌐 onchain-quest2-daily-global-to-sheet**
-    - Imports Onchain data from Dune API to Google Sheets.
-  ...
+- [Terraform](https://www.terraform.io/downloads) >= 1.0
+- [Google Cloud SDK](https://cloud.google.com/sdk/docs/install)
+- GCP project with billing enabled
+- Service Account key (`key/terraform.json`)
 
 <br/>
 
-## ⚠️ Cautionary Notes
+## Getting Started
 
-- **🔐 Service Accounts**: Only Service Accounts from your project can be used with Cloud Functions and Cloud Scheduler.
-- **🔗 API Usage**: 
-  - For GA4, the [Analytics Reporting API](https://console.cloud.google.com/apis/api/analyticsreporting.googleapis.com/overview?hl=ko&project=mgmt-2023&supportedpurview=project) is not available.
-  - However, the [Google Analytics Data API](https://console.cloud.google.com/apis/api/analyticsdata.googleapis.com/overview?hl=ko&project=mgmt-2023&supportedpurview=project) can be used.
+```bash
+# 1. Clone the repository
+git clone <repo-url>
+cd terraform-bigquery-googlesheet
+
+# 2. Navigate to the project directory
+cd project/somaz-bigquery
+
+# 3. Set sensitive variables (do NOT commit real values)
+export TF_VAR_db_admin_password="your-secure-password"
+
+# 4. Initialize Terraform
+terraform init
+
+# 5. Review and apply
+terraform plan -var-file=somaz.tfvars
+terraform apply -var-file=somaz.tfvars
+```
+
+<br/>
+
+## Project Structure
+
+```
+terraform-bigquery-googlesheet/
+├── key/                          # Service account credentials (do NOT commit secrets)
+├── modules/                      # Reusable Terraform modules
+│   ├── gcs_buckets/              # Google Cloud Storage buckets
+│   ├── mysql/                    # CloudSQL (MySQL) configuration
+│   ├── network/                  # VPC, subnets, firewall rules
+│   └── service_accounts/         # GCP service accounts
+└── project/somaz-bigquery/       # Main Terraform configuration
+    ├── *.tf                      # Terraform resource definitions
+    ├── somaz.tfvars              # Variable overrides
+    └── cloud-functions/          # 28 Cloud Function implementations
+```
+
+<br/>
+
+## Cloud Functions
+
+### BigQuery to Sheets
+
+| Function | Description |
+|----------|-------------|
+| `bigquery-to-sheet-simple` | Basic BigQuery to Sheets export |
+| `bigquery-to-sheet-multiple` | Multiple table queries to Sheets |
+| `bigquery-to-sheet-retention` | Retention metrics export |
+| `bigquery-to-sheet-wallet` | Wallet/balance data export |
+| `bigquery-to-sheet-tier-badge-monthly` | Monthly tier badge metrics |
+
+<br/>
+
+### Data Pipeline
+
+| Function | Description |
+|----------|-------------|
+| `mongodb-to-bigquery` | MongoDB import via Dataflow |
+| `bigquery-deduplication` | Remove duplicate records in BigQuery |
+| `somaz-cdn-bucket-file-download` | CDN log processing and download |
+
+<br/>
+
+### Google Analytics
+
+| Function | Description |
+|----------|-------------|
+| `analytics-to-sheet-new-web-visitors` | GA4 new user metrics to Sheets |
+| `analytics-to-sheet-new-web-visitors-country` | GA4 by country to Sheets |
+
+<br/>
+
+### Formula Copy
+
+| Function | Description |
+|----------|-------------|
+| `copy-formula-to-sheet` | Copy formulas in Google Sheets |
+| `copy-formula-monthly-to-sheet` | Monthly formula copies |
+| `copy-formula-retention-to-sheet` | Retention formula copies |
+
+<br/>
+
+### Onchain (Dune API)
+
+| Function | Description |
+|----------|-------------|
+| `onchain-agent-{common,epic,legend,rare,uncommon}-to-sheet` | Agent data by rarity |
+| `onchain-materials-dp-chip-to-sheet` | DP Chip materials data |
+| `onchain-materials-skill-exchange-ticket-to-sheet` | Skill exchange ticket data |
+| `onchain-pack-basic-epic1-to-sheet` | Pack (basic/epic) data |
+| `onchain-pack-airdrop-monthly-to-sheet` | Monthly airdrop pack data |
+| `onchain-pack-contribution-compensation-monthly-to-sheet` | Monthly contribution compensation |
+| `onchain-quest2-daily-global-to-sheet` | Daily global quest data |
+| `onchain-quest2-daily-global-monthly-to-sheet` | Monthly aggregated quest data |
+| `onchain-quest2-premium-monthly-to-sheet` | Premium quest monthly data |
+| `onchain-quest2-weekly-monthly-to-sheet` | Weekly quest monthly data |
+
+<br/>
+
+### Other
+
+| Function | Description |
+|----------|-------------|
+| `matic-value-to-sheet` | Fetch Polygon (MATIC) price from CoinGecko |
+
+<br/>
+
+## Environment Variables
+
+Cloud Functions use the following environment variables (set in Terraform `.tf` files):
+
+| Variable | Description |
+|----------|-------------|
+| `SHEET_ID` | Google Sheet ID for data export |
+| `DUNE_API_KEY` | Dune Analytics API key (for onchain functions) |
+| `MONGODB_URI` | MongoDB connection string (for mongodb-to-bigquery) |
+| `PROJECT_ID` | GCP project ID |
+| `REGION` | GCP region |
+
+<br/>
+
+## Cautionary Notes
+
+- **Service Accounts**: Only Service Accounts from your project can be used with Cloud Functions and Cloud Scheduler.
+- **API Usage**:
+  - For GA4, the [Analytics Reporting API](https://console.cloud.google.com/apis/api/analyticsreporting.googleapis.com/overview) is not available.
+  - However, the [Google Analytics Data API](https://console.cloud.google.com/apis/api/analyticsdata.googleapis.com/overview) can be used.
   - To use the [Dune API](https://dune.com/docs/api/) for Onchain data, you will need to create an API Key and choose an appropriate billing plan.
 
 <br/>
 
-## 📜 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

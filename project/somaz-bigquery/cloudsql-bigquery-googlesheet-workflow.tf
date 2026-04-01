@@ -32,7 +32,7 @@ resource "google_cloudfunctions_function" "bigquery_sheet_retention_function" {
   name                  = "bigquery-to-sheet-retention"
   description           = "Sync data from BigQuery to Google Sheets"
   available_memory_mb   = 512
-  runtime               = "python38"
+  runtime               = "python311"
   service_account_email = module.service_accounts_bigquery.email
   docker_registry       = "ARTIFACT_REGISTRY"
   timeout               = 540
@@ -103,7 +103,7 @@ resource "google_cloudfunctions_function" "bigquery_sheet_wallet_function" {
   name                  = "bigquery-to-sheet-wallet"
   description           = "Sync data from BigQuery to Google Sheets"
   available_memory_mb   = 256
-  runtime               = "python38"
+  runtime               = "python311"
   service_account_email = module.service_accounts_bigquery.email
   docker_registry       = "ARTIFACT_REGISTRY"
   timeout               = 540

@@ -32,7 +32,7 @@ resource "google_cloudfunctions_function" "copy_formula_sheet_function" {
   name                  = "copy-formula-to-sheet"
   description           = "Sync data from Matic Value to Google Sheets"
   available_memory_mb   = 512
-  runtime               = "python38"
+  runtime               = "python311"
   service_account_email = module.service_accounts_bigquery.email
   docker_registry       = "ARTIFACT_REGISTRY"
   timeout               = 540
@@ -103,7 +103,7 @@ resource "google_cloudfunctions_function" "copy_formula_retention_sheet_function
   name                  = "copy-formula-retention-to-sheet"
   description           = "Sync data from formula to Google Sheets"
   available_memory_mb   = 512
-  runtime               = "python38"
+  runtime               = "python311"
   service_account_email = module.service_accounts_bigquery.email
   docker_registry       = "ARTIFACT_REGISTRY"
   timeout               = 540
@@ -174,7 +174,7 @@ resource "google_cloudfunctions_function" "copy_formula_monthly_sheet_function" 
   name                  = "copy-formula-monthly-to-sheet"
   description           = "Sync data from formula to Google Sheets"
   available_memory_mb   = 512
-  runtime               = "python38"
+  runtime               = "python311"
   service_account_email = module.service_accounts_bigquery.email
   docker_registry       = "ARTIFACT_REGISTRY"
   timeout               = 540

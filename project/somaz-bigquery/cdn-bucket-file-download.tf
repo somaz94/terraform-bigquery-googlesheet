@@ -43,7 +43,7 @@ resource "google_cloudfunctions_function" "somaz_cdn_log_processor_function" {
   name                  = "somaz-cdn-log-processor-function"
   description           = "Save Download Log Data from somaz.cdn.luxon.games"
   available_memory_mb   = 512
-  runtime               = "python39"
+  runtime               = "python311"
   service_account_email = module.service_accounts_bigquery.email
   docker_registry       = "ARTIFACT_REGISTRY"
   timeout               = 540

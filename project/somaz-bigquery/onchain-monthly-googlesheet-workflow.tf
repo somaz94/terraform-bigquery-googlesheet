@@ -30,7 +30,7 @@ resource "google_cloudfunctions_function" "onchain_quest2_daily_global_monthly_s
 
   name                  = "onchain-quest2-daily-global-monthly-to-sheet"
   description           = "Function to onchain-quest2-daily-global-monthly-to-sheet"
-  runtime               = "python38"
+  runtime               = "python311"
   service_account_email = module.service_accounts_bigquery.email
   docker_registry       = "ARTIFACT_REGISTRY"
   timeout               = 540
@@ -99,7 +99,7 @@ resource "google_cloudfunctions_function" "onchain_quest2_weekly_monthly_sheet_f
 
   name                  = "onchain-quest2-weekly-monthly-to-sheet"
   description           = "Function to onchain-quest2-weekly-monthly-to-sheet"
-  runtime               = "python38"
+  runtime               = "python311"
   service_account_email = module.service_accounts_bigquery.email
   docker_registry       = "ARTIFACT_REGISTRY"
   timeout               = 540
@@ -168,7 +168,7 @@ resource "google_cloudfunctions_function" "onchain_quest2_premium_monthly_sheet_
 
   name                  = "onchain-quest2-premium-monthly-to-sheet"
   description           = "Function to onchain-quest2-premium-monthly-to-sheet"
-  runtime               = "python38"
+  runtime               = "python311"
   service_account_email = module.service_accounts_bigquery.email
   docker_registry       = "ARTIFACT_REGISTRY"
   timeout               = 540
@@ -237,7 +237,7 @@ resource "google_cloudfunctions_function" "onchain_pack_contribution_compensatio
 
   name                  = "onchain-pack-contribution-compensation-monthly-to-sheet"
   description           = "Function to onchain-pack-contribution-compensation-monthly-to-sheet"
-  runtime               = "python38"
+  runtime               = "python311"
   service_account_email = module.service_accounts_bigquery.email
   docker_registry       = "ARTIFACT_REGISTRY"
   timeout               = 540
@@ -306,7 +306,7 @@ resource "google_cloudfunctions_function" "onchain_pack_airdrop_monthly_sheet_fu
 
   name                  = "onchain-pack-airdrop-monthly-to-sheet"
   description           = "Function to onchain-pack-airdrop-monthly-to-sheet"
-  runtime               = "python38"
+  runtime               = "python311"
   service_account_email = module.service_accounts_bigquery.email
   docker_registry       = "ARTIFACT_REGISTRY"
   timeout               = 540

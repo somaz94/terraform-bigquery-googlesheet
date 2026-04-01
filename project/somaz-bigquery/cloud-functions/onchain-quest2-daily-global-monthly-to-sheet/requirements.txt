@@ -1,5 +1,5 @@
-requests==2.25.1
-gspread==3.6.0
-google-auth==1.27.1
-google-api-python-client==1.12.8
-Flask<3.0,>=1.0
+requests==2.32.3
+gspread==6.1.4
+google-auth==2.36.0
+google-api-python-client==2.155.0
+flask>=2.0,<4.0

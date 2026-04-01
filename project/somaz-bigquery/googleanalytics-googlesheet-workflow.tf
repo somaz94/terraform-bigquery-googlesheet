@@ -32,7 +32,7 @@ resource "google_cloudfunctions_function" "analytics_sheet_new_web_visitors_func
   name                  = "analytics-to-sheet-new-web-visitors"
   description           = "Sync data from New Web Vistors Value to Google Sheets"
   available_memory_mb   = 512
-  runtime               = "python38"
+  runtime               = "python311"
   service_account_email = module.service_accounts_bigquery.email
   docker_registry       = "ARTIFACT_REGISTRY"
   timeout               = 540
@@ -104,7 +104,7 @@ resource "google_cloudfunctions_function" "analytics_sheet_new_web_visitors_coun
   name                  = "analytics-to-sheet-new-web-visitors-country"
   description           = "Sync data from New Web Vistors Value by Country to Google Sheets"
   available_memory_mb   = 512
-  runtime               = "python38"
+  runtime               = "python311"
   service_account_email = module.service_accounts_bigquery.email
   docker_registry       = "ARTIFACT_REGISTRY"
   timeout               = 540

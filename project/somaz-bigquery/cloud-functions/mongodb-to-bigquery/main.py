@@ -33,7 +33,7 @@ def start_dataflow(request):
             "launchParameter": {
                 "jobName": f"{database}-to-bigquery-job",
                 "parameters": {
-                    "mongoDbUri": f"mongodb://mongo:somaz!2023@34.11.11.111:27017", # mongodb://<DB id>:<DB Password>@<DB IP>:<DB Port>
+                    "mongoDbUri": os.environ.get('MONGODB_URI', 'mongodb://<DB_USER>:<DB_PASSWORD>@<DB_HOST>:<DB_PORT>'),
                     "database": database,
                     "collection": "mongologs",
                     "outputTableSpec": f"{PROJECT_ID}:mongodb_dataset.{database}-mongodb-internal-table",

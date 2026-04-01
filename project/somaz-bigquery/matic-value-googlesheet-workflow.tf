@@ -32,7 +32,7 @@ resource "google_cloudfunctions_function" "matic_value_sheet_function" {
   name                  = "matic-value-to-sheet"
   description           = "Sync data from Matic Value to Google Sheets"
   available_memory_mb   = 512
-  runtime               = "python38"
+  runtime               = "python311"
   service_account_email = module.service_accounts_bigquery.email
   docker_registry       = "ARTIFACT_REGISTRY"
   timeout               = 540

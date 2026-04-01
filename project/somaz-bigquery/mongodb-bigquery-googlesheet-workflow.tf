@@ -69,7 +69,7 @@ resource "google_cloudfunctions_function" "mongodb_bigquery_dataflow_function" {
 
   name                  = "mongodb-to-bigquery-dataflow"
   description           = "Function to mongodb-to-bigquery the Dataflow job"
-  runtime               = "python38"
+  runtime               = "python311"
   service_account_email = module.service_accounts_bigquery.email
   docker_registry       = "ARTIFACT_REGISTRY"
   timeout               = 540
@@ -143,7 +143,7 @@ resource "google_cloudfunctions_function" "bigquery_deduplication_function" {
 
   name                  = "bigquery-deduplication-function"
   description           = "Function to remove duplicates from BigQuery"
-  runtime               = "python38"
+  runtime               = "python311"
   available_memory_mb   = 256
   source_archive_bucket = google_storage_bucket.cloud_function_storage.name
   source_archive_object = google_storage_bucket_object.bigquery_deduplication_cloudfunction_archive.name
@@ -212,7 +212,7 @@ resource "google_cloudfunctions_function" "bigquery_sheet_simple_function" {
   name                  = "bigquery-to-sheet-simple"
   description           = "Sync data from BigQuery to Google Sheets"
   available_memory_mb   = 512
-  runtime               = "python38"
+  runtime               = "python311"
   service_account_email = module.service_accounts_bigquery.email
   docker_registry       = "ARTIFACT_REGISTRY"
   timeout               = 540
@@ -284,7 +284,7 @@ resource "google_cloudfunctions_function" "bigquery_sheet_multiple_function" {
   name                  = "bigquery-to-sheet-multiple"
   description           = "Sync data from BigQuery to Google Sheets"
   available_memory_mb   = 512
-  runtime               = "python38"
+  runtime               = "python311"
   service_account_email = module.service_accounts_bigquery.email
   docker_registry       = "ARTIFACT_REGISTRY"
   timeout               = 540

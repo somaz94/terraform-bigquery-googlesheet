@@ -26,7 +26,7 @@ prod_somaz_gke_service   = "prod-somaz-gke-service"
 
 ## DB(Mysql) ##
 db_admin_user              = "admin"
-db_admin_password          = "somaz!23"
+db_admin_password          = "CHANGE_ME" # Set via TF_VAR_db_admin_password or terraform.tfvars.local
 db_name_prod               = "prod-somaz-db"
 
 prod_somaz_db_additional_databases = [
